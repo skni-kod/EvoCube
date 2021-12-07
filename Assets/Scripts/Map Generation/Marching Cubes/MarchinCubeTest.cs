@@ -2,26 +2,23 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
+
+
 public class MarchinCubeTest : MonoBehaviour
 {
     public int size = 8;
+    public int offsetX = 0;
+    public int offsetY = 0;
     [SerializeField]MeshFilter meshFilter;
     Mesh mesh;
+    [SerializeField] public Perlin2dSettings p2d;
 
-    [SerializeField] float frequency = 0.02f;
-    [SerializeField] float lacunarity = 2f;
-    [SerializeField] int offsetX = 0;
-    [SerializeField] int offsetY = 0;
-    [SerializeField] float gain = 0.5f;
-    [SerializeField] int seed = 0;
-    [SerializeField] float resolution = 1f;
-    [SerializeField] float idk = 1;
-    [SerializeField] int type = 0;
     void Start()
     {
         mesh = MeshAPI.CreateMesh(size, 1);
         meshFilter.mesh = mesh;
-        MeshAPI.EditVerticesValues(mesh, PerlinAPI.GPUPerlin2D(size + 1, seed + 1, new Vector2(offsetX, offsetY), gain, frequency, lacunarity, idk, type));
+        MeshAPI.EditVerticesValues(mesh, PerlinAPI.GPUPerlin2D(size + 1, p2d.seed + 1, new Vector2(offsetX, offsetY), p2d.gain, p2d.frequency, p2d.lacunarity, p2d.idk, p2d.type, p2d.octaves));
         //MeshAPI.RebuildMeshAsync(mesh, 0.00001f);
     }
 
@@ -32,8 +29,8 @@ public class MarchinCubeTest : MonoBehaviour
     
     void Regenerate()
     {
-        float[] noise_data = PerlinAPI.GPUPerlin2D(size + 1, seed + 1, new Vector2(offsetX, offsetY), gain, frequency, lacunarity, idk, type);
-        MeshAPI.RegenerateMesh(mesh, size, resolution, noise_data);
+        float[] noise_data = PerlinAPI.GPUPerlin2D(size + 1, p2d.seed + 1, new Vector2(offsetX, offsetY), p2d.gain, p2d.frequency, p2d.lacunarity, p2d.idk, p2d.type, p2d.octaves);
+        MeshAPI.RegenerateMesh(mesh, size, p2d.resolution, noise_data);
     }
 
 }

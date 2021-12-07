@@ -26,12 +26,12 @@ public class PerlinAPI : MonoBehaviour
         m_perlinNoise = Resources.Load<ComputeShader>("Shaders/ComputeShaders/ImprovedPerlinNoise2D");
     }
 
-    public static float[] GPUPerlin2D(int size, int seed, Vector2 offset, float gain, float frequency, float lacunarity, float idk, int type)
+    public static float[] GPUPerlin2D(int size, int seed, Vector2 offset, float gain, float frequency, float lacunarity, float idk, int type, int octaves)
     {
         int corrected_size = size;
         while (corrected_size % N != 0)
             corrected_size++;
-        float[] map = GPUPerlin2dMAP(corrected_size, seed, offset, gain, frequency, lacunarity, idk, type);
+        float[] map = GPUPerlin2dMAP(corrected_size, seed, offset, gain, frequency, lacunarity, idk, type, octaves);
         float[] new_map = new float[size * size];
         int idx = 0;
         for (int y = 0; y < corrected_size; y++)
@@ -47,9 +47,9 @@ public class PerlinAPI : MonoBehaviour
         return new_map;
     }
 
-    private static float[] GPUPerlin2dMAP(int size, int seed, Vector2 offset, float gain, float frequency, float lacunarity, float idk, int type)
+    private static float[] GPUPerlin2dMAP(int size, int seed, Vector2 offset, float gain, float frequency, float lacunarity, float idk, int type, int octaves)
     {
-        if (type > 2 || type <0)
+        if (type > 3 || type <0)
         {
             throw new System.ArgumentException("Ther is no such type");
         }
@@ -70,6 +70,7 @@ public class PerlinAPI : MonoBehaviour
         m_perlinNoise.SetFloat("_Lacunarity", lacunarity);
         m_perlinNoise.SetFloat("_X", offset.x);
         m_perlinNoise.SetFloat("_Y", offset.y);
+        m_perlinNoise.SetInt("_Octaves", octaves);
         m_perlinNoise.SetFloat("_Idk", idk);
         m_perlinNoise.SetFloat("_Gain", gain);
         m_perlinNoise.SetTexture(type, "_PermTable1D", perlin.PermutationTable1D);
