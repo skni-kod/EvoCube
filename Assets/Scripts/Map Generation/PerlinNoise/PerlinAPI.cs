@@ -49,7 +49,7 @@ public class PerlinAPI : MonoBehaviour
 
     private static float[] GPUPerlin2dMAP(int size, int seed, Vector2 offset, float gain, float frequency, float lacunarity, float idk, int type, int octaves)
     {
-        if (type > 3 || type <0)
+        if (type > 4 || type <0)
         {
             throw new System.ArgumentException("Ther is no such type");
         }

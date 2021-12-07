@@ -2,6 +2,7 @@
 #pragma kernel turbulentN
 #pragma kernel ridgeN
 #pragma kernel perlinInjectedN
+#pragma kernel perlinInjected2N
 
 SamplerState _PointRepeat;
 
@@ -139,15 +140,24 @@ void perlinInjectedN(uint3 id : SV_DispatchThreadID)
 {
 	float2 uv = float2(id.xy + float2(_X, _Y));
 	float n0 = fBm(uv, _Octaves, 2);
-	float n = ridgedmf(uv, _Octaves, _Idk, n0)*0.4;
-	n += turbulent(uv, _Octaves, n0)*0.6;
+	float n = ridgedmf(uv, _Octaves, _Idk, n0)*0.5;
+	n += turbulent(uv, _Octaves, n0)*0.5;
 	float n2 = fBm(uv, _Octaves, n);
 	float n3 = fBm(uv, 3, 1);
 	_Result[id.x + id.y * _Width] = n2 + n3*2;
 }
 
 
-
+[numthreads(8, 8, 1)]
+void perlinInjected2N(uint3 id : SV_DispatchThreadID)
+{
+	float2 uv = float2(id.xy + float2(_X, _Y));
+	float n = clamp(fBm(uv, _Octaves, 1), 0, 6);
+	n += clamp(fBm(uv, _Octaves + 1, 1), 0, 16);
+	float ref = clamp(fBm(uv, _Octaves, 3), 0, 4);
+	n += clamp(ridgedmf(uv, 2, _Idk, ref), -1000, 1000);
+	_Result[id.x + id.y * _Width] = n;
+}
 
 
 

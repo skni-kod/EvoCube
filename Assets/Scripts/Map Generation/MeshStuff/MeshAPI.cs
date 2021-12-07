@@ -105,6 +105,27 @@ public class MeshAPI : MonoBehaviour
         return triangles;
     }
 
+    public static int[] CalculateTrianglesFlat(int size)
+    {
+        int idx;
+        int tris = 0;
+        int[] triangles = new int[size * size * 6];
+        for (int y = 0; y < size; y++)
+        {
+            for (int x = 0; x < size; x++)
+            {
+                idx = (x * 6) + (y * (size + 1)) * 6;
+                triangles[tris++] = idx + 6 + 2;
+                triangles[tris++] = idx + 0;
+                triangles[tris++] = idx + (size + 1) * 6 + 4;
+                triangles[tris++] = idx + 6 + (size + 1) * 6 + 1;
+                triangles[tris++] = idx + 6 + 3;
+                triangles[tris++] = idx + (size + 1) * 6 + 5;
+            }
+        }
+        return triangles;
+    }
+
     private static IEnumerator CalculateTrianglesAsyncIE(Mesh mesh, int size, float time)
     {
         int idx;
@@ -150,19 +171,19 @@ public class MeshAPI : MonoBehaviour
         {
             for (int x = 0; x < size; x++)
             {
-                idx = x + (y * (size + 1));
+                idx = (x * 6) + (y * (size + 1)) * 6;
 
-                triangles[tris++] = idx + 1 + 0;
-                triangles[tris++] = idx + 2;
-                triangles[tris++] = idx + (size + 1) + 1;
+                triangles[tris++] = idx + 6 + 2;
+                triangles[tris++] = idx + 0;
+                triangles[tris++] = idx + (size + 1) * 6 + 4;
 
                 mesh.triangles = triangles;
                 mesh.RecalculateNormals();
                 yield return new WaitForSeconds(time);
 
-                triangles[tris++] = idx + 1 + (size + 1);
-                triangles[tris++] = idx + 1;
-                triangles[tris++] = idx + (size + 1);
+                triangles[tris++] = idx + 6 + (size + 1) * 6 +1;
+                triangles[tris++] = idx + 6 + 3;
+                triangles[tris++] = idx + (size + 1) * 6 + 5;
 
                 mesh.triangles = triangles;
                 mesh.RecalculateNormals();
@@ -187,9 +208,9 @@ public class MeshAPI : MonoBehaviour
                 for (int g = 0; g < 6; g++)
                 {
                     if (data == null)
-                        vertices[x + (y * size) + g] = new Vector3(x * resolution, 0, y * resolution);
+                        vertices[6*(x + (y * size)) + g] = new Vector3(x * resolution, 0, y * resolution);
                     else
-                        vertices[x + (y * size) + g] = new Vector3(x * resolution, data[x + y * size], y * resolution);
+                        vertices[6*(x + (y * size)) + g] = new Vector3(x * resolution, data[x + y * size], y * resolution);
                 }
             }
         }
