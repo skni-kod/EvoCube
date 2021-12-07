@@ -140,4 +140,61 @@ public class MeshAPI : MonoBehaviour
     {
         instance.StartCoroutine(CalculateTrianglesAsyncIE(mesh, size, time));
     }
+
+    private static IEnumerator CalculateTrianglesFlatAsyncIE(Mesh mesh, int size, float time)
+    {
+        int idx;
+        int tris = 0;
+        int[] triangles = new int[size * size * 6];
+        for (int y = 0; y < size; y++)
+        {
+            for (int x = 0; x < size; x++)
+            {
+                idx = x + (y * (size + 1));
+
+                triangles[tris++] = idx + 1 + 0;
+                triangles[tris++] = idx + 2;
+                triangles[tris++] = idx + (size + 1) + 1;
+
+                mesh.triangles = triangles;
+                mesh.RecalculateNormals();
+                yield return new WaitForSeconds(time);
+
+                triangles[tris++] = idx + 1 + (size + 1);
+                triangles[tris++] = idx + 1;
+                triangles[tris++] = idx + (size + 1);
+
+                mesh.triangles = triangles;
+                mesh.RecalculateNormals();
+                yield return new WaitForSeconds(time);
+
+            }
+        }
+    }
+
+    public static void CalculateTrianglesFlatAsync(Mesh mesh, int size, float time)
+    {
+        instance.StartCoroutine(CalculateTrianglesFlatAsyncIE(mesh, size, time));
+    }
+
+    public static Vector3[] CreateVerticesFlat(int size, float resolution, float[] data = null)
+    {
+        Vector3[] vertices = new Vector3[size * size * 6];
+        for (int y = 0; y < size; y++)
+        {
+            for (int x = 0; x < size; x++)
+            {
+                for (int g = 0; g < 6; g++)
+                {
+                    if (data == null)
+                        vertices[x + (y * size) + g] = new Vector3(x * resolution, 0, y * resolution);
+                    else
+                        vertices[x + (y * size) + g] = new Vector3(x * resolution, data[x + y * size], y * resolution);
+                }
+            }
+        }
+        return vertices;
+    }
+
+
 }

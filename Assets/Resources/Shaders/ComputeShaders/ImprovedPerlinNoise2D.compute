@@ -1,6 +1,7 @@
 #pragma kernel normalN
 #pragma kernel turbulentN
 #pragma kernel ridgeN
+#pragma kernel perlinInjectedN
 
 SamplerState _PointRepeat;
 
@@ -9,6 +10,7 @@ Texture2D _PermTable1D, _Gradient2D;
 float _X;
 float _Y;
 float _Idk;
+int _Octaves;
 
 float _Frequency, _Lacunarity, _Gain;
 
@@ -55,7 +57,7 @@ float inoise(float2 p)
 }
 
 // fractal sum, range -1.0 - 1.0
-float fBm(float2 p, int octaves)
+float fBm(float2 p, int octaves, float injection)
 {
 	float freq = _Frequency, amp = 0.5;
 	float sum = 0;	
@@ -63,19 +65,19 @@ float fBm(float2 p, int octaves)
 	{
 		sum += inoise(p * freq) * amp;
 		freq *= _Lacunarity;
-		amp *= _Gain;
+		amp *= _Gain * injection;
 	}
 	return sum;
 }
 
 // fractal abs sum, range 0.0 - 1.0
-float turbulent(float2 p, int octaves)
+float turbulent(float2 p, int octaves, float injection)
 {
 	float sum = 0;
 	float freq = _Frequency, amp = 1.0;
 	for(int i = 0; i < octaves; i++) 
 	{
-		sum += abs(inoise(p*freq))*amp;
+		sum += abs(inoise(p*freq))*amp*injection;
 		freq *= _Lacunarity;
 		amp *= _Gain;
 	}
@@ -92,7 +94,7 @@ float ridge(float h, float offset)
     return h;
 }
 
-float ridgedmf(float2 p, int octaves, float offset)
+float ridgedmf(float2 p, int octaves, float offset, float injection)
 {
 	float sum = 0;
 	float freq = _Frequency, amp = 0.5;
@@ -102,8 +104,8 @@ float ridgedmf(float2 p, int octaves, float offset)
 		float n = ridge(inoise(p*freq), offset);
 		sum += n*amp*prev;
 		prev = n;
-		freq *= _Lacunarity;
-		amp *= _Gain;
+		freq *= _Lacunarity * injection;
+		amp *= _Gain * injection;
 	}
 	return sum;
 }
@@ -112,7 +114,7 @@ float ridgedmf(float2 p, int octaves, float offset)
 void ridgeN(uint3 id : SV_DispatchThreadID)
 {
 	float2 uv = float2(id.xy + float2(_X, _Y));
-	float n = ridgedmf(uv, 4, _Idk);
+	float n = ridgedmf(uv, _Octaves, _Idk, 1);
 	_Result[id.x + id.y * _Width] = n;
 }
 
@@ -120,7 +122,7 @@ void ridgeN(uint3 id : SV_DispatchThreadID)
 void normalN(uint3 id : SV_DispatchThreadID)
 {
 	float2 uv = float2(id.xy + float2(_X, _Y));
-	float n = fBm(uv, 4);
+	float n = fBm(uv, _Octaves, 1);
 	_Result[id.x + id.y * _Width] = n;
 }
 
@@ -128,11 +130,21 @@ void normalN(uint3 id : SV_DispatchThreadID)
 void turbulentN(uint3 id : SV_DispatchThreadID)
 {
 	float2 uv = float2(id.xy + float2(_X, _Y));
-	float n = turbulent(uv, 4);
+	float n = turbulent(uv, _Octaves, 1);
 	_Result[id.x + id.y * _Width] = n;
 }
 
-
+[numthreads(8, 8, 1)]
+void perlinInjectedN(uint3 id : SV_DispatchThreadID)
+{
+	float2 uv = float2(id.xy + float2(_X, _Y));
+	float n0 = fBm(uv, _Octaves, 2);
+	float n = ridgedmf(uv, _Octaves, _Idk, n0)*0.4;
+	n += turbulent(uv, _Octaves, n0)*0.6;
+	float n2 = fBm(uv, _Octaves, n);
+	float n3 = fBm(uv, 3, 1);
+	_Result[id.x + id.y * _Width] = n2 + n3*2;
+}
 
 
 

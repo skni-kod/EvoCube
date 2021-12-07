@@ -18,7 +18,7 @@ public class MarchinCubeTest : MonoBehaviour
     {
         mesh = MeshAPI.CreateMesh(size, 1);
         meshFilter.mesh = mesh;
-        MeshAPI.EditVerticesValues(mesh, PerlinAPI.GPUPerlin2D(size + 1, p2d.seed + 1, new Vector2(offsetX, offsetY), p2d.gain, p2d.frequency, p2d.lacunarity, p2d.idk, p2d.type));
+        MeshAPI.EditVerticesValues(mesh, PerlinAPI.GPUPerlin2D(size + 1, p2d.seed + 1, new Vector2(offsetX, offsetY), p2d.gain, p2d.frequency, p2d.lacunarity, p2d.idk, p2d.type, p2d.octaves));
         //MeshAPI.RebuildMeshAsync(mesh, 0.00001f);
     }
 
@@ -29,7 +29,7 @@ public class MarchinCubeTest : MonoBehaviour
     
     void Regenerate()
     {
-        float[] noise_data = PerlinAPI.GPUPerlin2D(size + 1, p2d.seed + 1, new Vector2(offsetX, offsetY), p2d.gain, p2d.frequency, p2d.lacunarity, p2d.idk, p2d.type);
+        float[] noise_data = PerlinAPI.GPUPerlin2D(size + 1, p2d.seed + 1, new Vector2(offsetX, offsetY), p2d.gain, p2d.frequency, p2d.lacunarity, p2d.idk, p2d.type, p2d.octaves);
         MeshAPI.RegenerateMesh(mesh, size, p2d.resolution, noise_data);
     }
 

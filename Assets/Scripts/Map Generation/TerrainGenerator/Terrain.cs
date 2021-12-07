@@ -23,7 +23,7 @@ public class Terrain : MonoBehaviour
 
     private void Update()
     {
-        for (int i =0; i<transform.GetChildCount();i++)
+        for (int i =0; i<transform.childCount;i++)
         {
             transform.GetChild(i).GetComponent<MarchinCubeTest>().offsetX += 1;
         }
@@ -44,14 +44,12 @@ public class Terrain : MonoBehaviour
 
     public void Start()
     {
-        GenerateChunk(new Vector2(0, 0));
-        GenerateChunk(new Vector2(1, 0));
-        GenerateChunk(new Vector2(0, 1));
-        GenerateChunk(new Vector2(1, 1));
-        GenerateChunk(new Vector2(1, 2));
-        GenerateChunk(new Vector2(2, 1));
-        GenerateChunk(new Vector2(2, 2));
-        GenerateChunk(new Vector2(0, 2));
-        GenerateChunk(new Vector2(2, 0));
+        for (int x = 0; x< 4;x++)
+        {
+            for (int y = 0; y < 4; y++)
+            {
+                GenerateChunk(new Vector2(x, y));
+            }
+        }
     }
 }
