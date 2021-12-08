@@ -23,10 +23,10 @@ public class LowPolyTerrain : MonoBehaviour
 
     private void Update()
     {
-        for (int i = 0; i < transform.childCount; i++)
+        /*for (int i = 0; i < transform.childCount; i++)
         {
             transform.GetChild(i).GetComponent<TestMesh>().offsetX += 1;
-        }
+        }*/
     }
     public void GenerateChunksAround()
     {
