@@ -2,36 +2,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LowPolyTerrain : MonoBehaviour
+public class MapGenerationTester : MonoBehaviour
 {
-    private static LowPolyTerrain instance = null;
-    private int chunk_size = 64;
     public Dictionary<int, int> chunks = new Dictionary<int, int>();
     [SerializeField] public Perlin2dSettings p2d;
-    protected virtual void Awake()
-    {
-        if (instance == null)
-        {
-            instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-    }
-
-
-    public void GenerateChunksAround()
-    {
-        throw new System.NotImplementedException();
-    }
-
+    [SerializeField] public Material material;
+    [SerializeField] public int chunk_size;
+    [SerializeField] public Vector2 map_size;
+    [SerializeField] public Vector2 scrollingSpeed;
     public void GenerateChunk(Vector2 id)
     {
         GameObject chunk = new GameObject();
         chunk.transform.position = new Vector3(id.x * chunk_size, 0, id.y * chunk_size);
         chunk.transform.parent = transform;
-        Chunk t = chunk.gameObject.AddComponent<Chunk>();
+        ChunkGenTesting t = chunk.gameObject.AddComponent<ChunkGenTesting>();
         t.terrainReference = this;
         t.size = chunk_size;
         t.offsetX = (int)id.x * chunk_size;
@@ -41,13 +25,12 @@ public class LowPolyTerrain : MonoBehaviour
 
     public void Start()
     {
-        for (int x = 0; x < 20; x++)
+        for (int x = 0; x < map_size.x; x++)
         {
-            for (int y = 0; y < 20; y++)
+            for (int y = 0; y < map_size.y; y++)
             {
                 GenerateChunk(new Vector2(x, y));
             }
         }
     }
 }
-
