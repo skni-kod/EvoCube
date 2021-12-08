@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Chunk : MonoBehaviour
 {
+    public Vector3 id;
     public LowPolyTerrain terrainReference;
     MeshFilter meshFilter;
     MeshRenderer meshRenderer;
@@ -11,8 +12,11 @@ public class Chunk : MonoBehaviour
     [SerializeField] public int offsetX = 0;
     [SerializeField] public int offsetY = 0;
 
-    public void Init()
+    public void Init(Vector3 id)
     {
+
+
+        this.id = id;
         meshFilter = gameObject.AddComponent<MeshFilter>();
         meshRenderer = gameObject.AddComponent<MeshRenderer>();
         Mesh mesh = new Mesh();

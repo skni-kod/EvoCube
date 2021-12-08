@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: Testowe
   m_EditorClassIdentifier: 
   frequency: 0.007
-  lacunarity: 1.09
-  gain: 2.03
+  lacunarity: 1.21
+  gain: 1.51
   seed: 0
-  octaves: 9
+  octaves: 11
   resolution: 1
-  idk: 1.31
+  idk: -0.62
   type: 4

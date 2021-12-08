@@ -249,7 +249,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a873482c9824cb941b61f6da3635d52d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  p2d: {fileID: 11400000, guid: cc4d302fba8d5204ba8db57028b5d136, type: 2}
+  p2d: {fileID: 11400000, guid: 0f8afc90f0a0b2145a57983fb16df525, type: 2}
   material: {fileID: -6922793697723135513, guid: 39e9dc8d9c34262459993b2f36eccae2,
     type: 3}
   chunk_size: 64
