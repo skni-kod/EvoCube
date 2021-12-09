@@ -31,5 +31,10 @@ public class Chunk : MonoBehaviour
         collider.sharedMesh = mesh;
     }
 
+    public void BuildInit()
+    {
+
+    }
+
 
 }

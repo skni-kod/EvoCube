@@ -30,30 +30,27 @@ public class LowPolyTerrain : MonoBehaviour
     [SerializeField] public float generation_refresh_rate = 0.2f;
     [SerializeField] public float chunk_spawn_refresh_rate = 0.01f;
 
-    private ConcurrentQueue<MeshGenerator> queue = new ConcurrentQueue<MeshGenerator>();
-    private ConcurrentQueue<MeshGenerator> generators_queue = new ConcurrentQueue<MeshGenerator>();
+    private ConcurrentQueue<Vector3> queue_idsToGenerate = new ConcurrentQueue<Vector3>();
+    private ConcurrentQueue<MeshGenerator> queue_readyMeshBuilders = new ConcurrentQueue<MeshGenerator>();
 
-    private IEnumerator GenerationChecksCouroutine()
-    {
-        for(;;)
-        {
-            _generateChunksAroundPointsOfFocus();
-            yield return new WaitForSeconds(1f / generation_refresh_rate);
-        }
-    }
+    #region Threading
 
-    private IEnumerator MainGenerationCouroutine()
+    private void MainGenerationThread()
     {
-        for (;;)
+        for(; ; )
         {
-            if (ids_to_generate.Count > 0)
+            Vector3 id;
+            if (queue_idsToGenerate.TryDequeue(out id))
             {
-                GenerateChunk(ids_to_generate[0]);
-                ids_to_generate.RemoveAt(0);
+
             }
-            yield return new WaitForSeconds(1f / chunk_spawn_refresh_rate);
+            else
+                Thread.Sleep(500);
         }
     }
+
+    #endregion
+
 
     private void _generateChunksAroundPointsOfFocus()
     {
@@ -74,6 +71,7 @@ public class LowPolyTerrain : MonoBehaviour
                         Vector3 p = new Vector3(x + center.x, y + center.y, z + center.z);
                         if (!chunks.ContainsKey(p) && p.y == 0)
                         {
+                            queue_idsToGenerate.Enqueue(p);
                             ids_to_generate.Add(p);
                         }
                     }
@@ -107,6 +105,8 @@ public class LowPolyTerrain : MonoBehaviour
     {
         //StartCoroutine(GenerationChecksCouroutine());
         //StartCoroutine(MainGenerationCouroutine());
+        Thread thread = new Thread(() => MainGenerationThread());
+        thread.Start();
     }
 
     private void Update()
