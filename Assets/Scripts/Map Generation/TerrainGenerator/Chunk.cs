@@ -11,6 +11,7 @@ public class Chunk : MonoBehaviour
     [SerializeField] public int size = 128;
     [SerializeField] public int offsetX = 0;
     [SerializeField] public int offsetY = 0;
+    [SerializeField] public int offsetZ = 0;
 
     public void Init(Vector3 id)
     {
@@ -22,7 +23,7 @@ public class Chunk : MonoBehaviour
         Mesh mesh = new Mesh();
         MeshCollider collider = gameObject.AddComponent<MeshCollider>();
 
-        mesh.vertices = MeshAPI.CreateVerticesFlat(size + 1, 1, PerlinAPI.GPUPerlin2D(size + 1, terrainReference.p2d.seed + 1, new Vector2(offsetX, offsetY), terrainReference.p2d.gain, terrainReference.p2d.frequency, terrainReference.p2d.lacunarity, terrainReference.p2d.idk, terrainReference.p2d.type, terrainReference.p2d.octaves));
+        mesh.vertices = MeshAPI.CreateVerticesFlat(size + 1, 1, PerlinAPI.GPUPerlin2D(size + 1, terrainReference.p2d.seed + 1, new Vector2(offsetX, offsetZ), terrainReference.p2d.gain, terrainReference.p2d.frequency, terrainReference.p2d.lacunarity, terrainReference.p2d.idk, terrainReference.p2d.type, terrainReference.p2d.octaves));
         mesh.triangles = MeshAPI.CalculateTrianglesFlat(size);
         mesh.RecalculateNormals();
         meshRenderer.material = MaterialsAPI.GetMaterialByName("sand");
