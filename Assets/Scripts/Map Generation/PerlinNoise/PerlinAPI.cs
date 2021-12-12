@@ -11,6 +11,7 @@ public class PerlinAPI : MonoBehaviour
     public static int seed = 0;
     public static GPUPerlinNoise perlin;
     public static Perlin2dSettings p2d;
+    [SerializeField] private Perlin2dSettings p2d_to_set;
     private static int N = 8;
     private static PerlinAPI instance = null;
     private static ComputeBuffer m_noiseBuffer;
@@ -30,6 +31,7 @@ public class PerlinAPI : MonoBehaviour
     }
     public void ReloadPerlin()
     {
+        p2d = p2d_to_set;
         m_perlinNoise = Resources.Load<ComputeShader>("Shaders/ComputeShaders/ImprovedPerlinNoise2D");
         perlin = new GPUPerlinNoise(seed);
         perlin.LoadResourcesFor2DNoise();

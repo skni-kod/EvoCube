@@ -6,6 +6,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using ImprovedPerlinNoiseProject;
+using UnityEngine.Rendering;
 
 public class LowPolyTerrain : MonoBehaviour
 {
@@ -14,9 +15,11 @@ public class LowPolyTerrain : MonoBehaviour
     public Dictionary<Vector3, Chunk> chunks = new Dictionary<Vector3, Chunk>();
     [SerializeField] public Perlin2dSettings p2d;
     private GPUPerlinNoise perlin;
-    ObjectPool<PerlinGenerator> perlinGeneratorPool = new ObjectPool<PerlinGenerator>(5);
-    private ConcurrentQueue<MeshBuilder> queue_readyMeshBuilders = new ConcurrentQueue<MeshBuilder>();
+    ObjectPool<PerlinGenerator> perlinGeneratorPool;
+    private ConcurrentQueue<MeshBuilder> queue_readyMeshBuilders = new ConcurrentQueue<MeshBuilder>();;
+    private List<Vector3> spawn_later = new List<Vector3>();
 
+    #region Unity Methods
 
     protected virtual void Awake()
     {
@@ -30,11 +33,53 @@ public class LowPolyTerrain : MonoBehaviour
 
     public void Start()
     {
-        Thread threadGen = new Thread(() => GenerationThread());
-        threadGen.Start();
+        PreparePools();
+        //Thread threadGen = new Thread(() => GenerationThread());
+        //threadGen.Start();
     }
 
+    private void Update()
+    {
+        SeedGenerators();
+    }
+
+    private void OnDestroy()
+    {
+        ClearPools();
+    }
+
+    #endregion
+
     #region Main Methods
+
+    private void SeedGenerators()
+    {
+        List<Vector3> chunksIds = FindChunkIdsAroundAPI.FindChunksIdsAroundSquare(PlayerAPI.GetPlayerPosition(), 2);
+        foreach (Vector3 chunkId in chunksIds)
+        {
+            PerlinGenerator perlinGenerator;
+            if (perlinGeneratorPool.GetOne(out perlinGenerator))
+            {
+                perlinGenerator.Generate(chunkId);
+                perlinGeneratorPool.ReturnIntoPool(perlinGenerator);
+            }
+            else
+            {
+                if (!spawn_later.Contains(chunkId))
+                    spawn_later.Add(chunkId);
+            }
+        }
+    }
+
+    private void PreparePools()
+    {
+        perlinGeneratorPool = new ObjectPool<PerlinGenerator>(5);
+    }
+
+    private void ClearPools()
+    {
+        perlinGeneratorPool.ClearPool();
+    }
 
     public bool GenerateChunk(Vector3 id)
     {
@@ -59,23 +104,11 @@ public class LowPolyTerrain : MonoBehaviour
 
     private void GenerationThread()
     {
-        List<Vector3> spawn_later = new List<Vector3>();
+        
         for (; ; )
         {
             List<Vector3> chunksIds = FindChunkIdsAroundAPI.FindChunksIdsAroundSquare(PlayerAPI.GetPlayerPosition(), 2);
-            foreach(Vector3 chunkId in chunksIds)
-            {
-                PerlinGenerator perlinGenerator;
-                if (perlinGeneratorPool.container.TryDequeue(out perlinGenerator))
-                {
-                    perlinGenerator.Generate(chunkId);
-                }
-                else
-                {
-                    if (!spawn_later.Contains(chunkId))
-                        spawn_later.Add(chunkId);
-                }
-            }
+
             Thread.Sleep(50);
         }
     }

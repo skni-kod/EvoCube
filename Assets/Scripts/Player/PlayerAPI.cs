@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerAPI : MonoBehaviour
 {
     [SerializeField] private GameObject playerObject;
-    [SerializeField] private Transform playerPosition;
+    public static Vector3 playerPosition = new Vector3(0, 0, 0);
     public static PlayerAPI instance;
 
     protected virtual void Awake()
@@ -16,9 +16,14 @@ public class PlayerAPI : MonoBehaviour
             Destroy(gameObject);
     }
 
+    private void Update()
+    {
+        playerPosition = playerObject.transform.position;
+    }
+
     public static Vector3 GetPlayerPosition()
     {
-        return instance.playerPosition.position;
+        return playerPosition;
     }
 
 }

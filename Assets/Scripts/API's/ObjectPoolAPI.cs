@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 public interface IObjectPool
 {
     public void Init();
+    public void OnRelease();
 }
 
 public static class ObjectPoolAPI
@@ -20,9 +21,7 @@ public static class ObjectPoolAPI
     public static void Register<T>(ObjectPool<T> obj) where T : IObjectPool, new()
     {
         obj.Id = pool_registry.Count;
-        bool succes = false;
-        while (!succes)
-            succes = pool_registry.TryAdd(pool_registry.Count, obj);
+        pool_registry.ForcedAdd(pool_registry.Count, obj);
     }
 }
 
@@ -33,7 +32,7 @@ public class ObjectPool <T> where T : IObjectPool, new()
     public int maxSize;
     private bool _registered = false;
 
-    public ConcurrentQueue<T> container;
+    private ConcurrentQueue<T> container;
 
     public ObjectPool(int _size, int _maxSize = 8)
     {
@@ -41,6 +40,22 @@ public class ObjectPool <T> where T : IObjectPool, new()
         size = _size;
         maxSize = Mathf.Max(_maxSize, size);
         Init();
+    }
+
+    public void ClearPool()
+    {
+        List<T> items = container.ForcedClear();
+        items.ForEach(item => item.OnRelease());
+    }
+
+    public bool GetOne(out T item)
+    {
+        return container.TryDequeue(out item);
+    }
+
+    public void ReturnIntoPool(T item)
+    {
+        container.Enqueue(item);
     }
 
     private void Init()

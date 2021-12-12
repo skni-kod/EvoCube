@@ -17,6 +17,11 @@ public class PerlinGenerator : IObjectPool
     {
 
     }
+    
+    public void OnRelease()
+    {
+        m_noiseBuffer.Release();
+    }
 
     public void Init()
     {
@@ -26,8 +31,6 @@ public class PerlinGenerator : IObjectPool
         m_perlinNoise.SetTexture(PerlinAPI.p2d.type, "_PermTable1D", PerlinAPI.perlin.PermutationTable1D);
         m_perlinNoise.SetTexture(PerlinAPI.p2d.type, "_Gradient2D", PerlinAPI.perlin.Gradient2D);
         m_perlinNoise.SetBuffer(PerlinAPI.p2d.type, "_Result", m_noiseBuffer);
-        m_perlinNoise.SetFloat("_X", 0);
-        m_perlinNoise.SetFloat("_Z", 0);
         ReloadSettings();
     }
 
@@ -40,21 +43,21 @@ public class PerlinGenerator : IObjectPool
         m_perlinNoise.SetFloat("_Lacunarity", PerlinAPI.p2d.lacunarity);
     }
 
-    public float[] Generate(Vector3 offset)
+    public void Generate(Vector3 offset)
     {
         m_perlinNoise.SetFloat("_X", offset.x);
         m_perlinNoise.SetFloat("_Z", offset.z);
         m_perlinNoise.Dispatch(PerlinAPI.p2d.type, PerlinAPI.chunk_size / N, PerlinAPI.chunk_size / N, 1);
-
         AsyncGPUReadback.Request(m_noiseBuffer, GetNoiseDataCallback);
-        //m_noiseBuffer.GetData(verts);
-        return verts;
     }
 
-    void GetNoiseDataCallback(AsyncGPUReadbackRequest request)
+    public void GetNoiseDataCallback(AsyncGPUReadbackRequest request)
     {
-        Debug.Log(request.done);
+        request.WaitForCompletion();
+        verts = request.GetData<float>().ToArray();
+        LowPolyTerrain.instance.GenerateChunk(verts);
     }
+
     #endregion
 
 
