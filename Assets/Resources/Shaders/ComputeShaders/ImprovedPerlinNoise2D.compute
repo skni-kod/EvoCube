@@ -3,6 +3,8 @@
 #pragma kernel ridgeN
 #pragma kernel perlinInjectedN
 #pragma kernel perlinInjected2N
+#pragma kernel witekN
+
 
 SamplerState _PointRepeat;
 
@@ -191,7 +193,31 @@ void perlinInjected2N(uint3 id : SV_DispatchThreadID)
 }
 
 
+[numthreads(8, 8, 1)]
+void witekN(uint3 id : SV_DispatchThreadID)
+{
+	float2 uv = float2(id.xy + float2(_X, _Z));
+	float n = abs(fBm(uv, _Octaves, 2) * 5.0);
+	n += fBm(uv, _Octaves, 1);
+	//n = floor(n % 20) * 1.5;
+	n += ridgedmf(uv, _Octaves, 3, 1) * 0.008 * ridgedmf(uv, _Octaves, 3, 1);
+	n = floor(n * 1.0)/2.0;
 
+
+
+
+
+
+
+
+	float3 N = float3(id.x, n, id.y);
+	_Result[((id.x + id.y * _Width) * 6) + 0] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 1] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 2] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 3] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 4] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 5] = N;
+}
 
 
 
