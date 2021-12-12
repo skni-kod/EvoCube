@@ -8,7 +8,7 @@ public class Enemy : MonoBehaviour
     public GameObject RagDoll;
     public GameObject Stick;
     public GameObject Leaf;
-    float HP = 140;
+    public float HP = 140;
     bool aliveFlag = true;
     // Start is called before the first frame update
     void Start()
@@ -19,7 +19,7 @@ public class Enemy : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+     
     }
 
     //void OnCollisionEnter(Collision collision)
@@ -33,6 +33,7 @@ public class Enemy : MonoBehaviour
     public void TakeDamage(float damage)
     {
         HP -= damage;
+        GetComponentInChildren<EnemyHpUI>().UpdateHp(HP);
         if (HP < 0 && aliveFlag)
         {
             HP = 0;
