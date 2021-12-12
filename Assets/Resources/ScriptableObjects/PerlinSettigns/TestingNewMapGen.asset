@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5b27d748ce8b2d429d2061ccafc2acd, type: 3}
+  m_Name: TestingNewMapGen
+  m_EditorClassIdentifier: 
+  frequency: -0.07
+  lacunarity: -0.61
+  gain: 0.06
+  seed: 0
+  octaves: 4
+  resolution: 1
+  idk: 11.17
+  type: 1

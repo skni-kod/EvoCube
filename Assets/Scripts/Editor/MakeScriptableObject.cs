@@ -16,4 +16,6 @@ public class MakeScriptableObject
 
         Selection.activeObject = asset;
     }
+
+
 }

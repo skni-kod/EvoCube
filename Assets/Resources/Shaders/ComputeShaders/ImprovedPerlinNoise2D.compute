@@ -2,6 +2,7 @@
 #pragma kernel turbulentN
 #pragma kernel ridgeN
 #pragma kernel perlinInjectedN
+#pragma kernel perlinInjected2N
 
 SamplerState _PointRepeat;
 
@@ -9,6 +10,7 @@ Texture2D _PermTable1D, _Gradient2D;
 
 float _X;
 float _Y;
+float _Z;
 float _Idk;
 int _Octaves;
 
@@ -16,7 +18,7 @@ float _Frequency, _Lacunarity, _Gain;
 
 int _Width;
 
-RWStructuredBuffer<float> _Result;
+RWStructuredBuffer<float3> _Result;
 
 float2 fade(float2 t)
 {
@@ -113,41 +115,80 @@ float ridgedmf(float2 p, int octaves, float offset, float injection)
 [numthreads(8,8,1)]
 void ridgeN(uint3 id : SV_DispatchThreadID)
 {
-	float2 uv = float2(id.xy + float2(_X, _Y));
+	float2 uv = float2(id.xy + float2(_X, _Z));
 	float n = ridgedmf(uv, _Octaves, _Idk, 1);
-	_Result[id.x + id.y * _Width] = n;
+	float3 N = float3(id.x, n, id.y);
+	_Result[((id.x + id.y * _Width) * 6) + 0] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 1] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 2] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 3] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 4] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 5] = N;
 }
 
 [numthreads(8, 8, 1)]
 void normalN(uint3 id : SV_DispatchThreadID)
 {
-	float2 uv = float2(id.xy + float2(_X, _Y));
+	float2 uv = float2(id.xy + float2(_X, _Z));
 	float n = fBm(uv, _Octaves, 1);
-	_Result[id.x + id.y * _Width] = n;
+	float3 N = float3(id.x, n, id.y);
+	_Result[((id.x + id.y * _Width) * 6) + 0] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 1] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 2] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 3] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 4] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 5] = N;
 }
 
 [numthreads(8, 8, 1)]
 void turbulentN(uint3 id : SV_DispatchThreadID)
 {
-	float2 uv = float2(id.xy + float2(_X, _Y));
+	float2 uv = float2(id.xy + float2(_X, _Z));
 	float n = turbulent(uv, _Octaves, 1);
-	_Result[id.x + id.y * _Width] = n;
+	float3 N = float3(id.x, n, id.y);
+	_Result[((id.x + id.y * _Width) * 6) + 0] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 1] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 2] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 3] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 4] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 5] = N;
 }
 
 [numthreads(8, 8, 1)]
 void perlinInjectedN(uint3 id : SV_DispatchThreadID)
 {
-	float2 uv = float2(id.xy + float2(_X, _Y));
+	float2 uv = float2(id.xy + float2(_X, _Z));
 	float n0 = fBm(uv, _Octaves, 2);
-	float n = ridgedmf(uv, _Octaves, _Idk, n0)*0.4;
-	n += turbulent(uv, _Octaves, n0)*0.6;
+	float n = ridgedmf(uv, _Octaves, _Idk, n0)*0.5;
+	n += turbulent(uv, _Octaves, n0)*0.5;
 	float n2 = fBm(uv, _Octaves, n);
 	float n3 = fBm(uv, 3, 1);
-	_Result[id.x + id.y * _Width] = n2 + n3*2;
+	float3 N = float3(id.x, n2 + n3*2, id.y);
+	_Result[((id.x + id.y * _Width) * 6) + 0] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 1] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 2] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 3] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 4] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 5] = N;
 }
 
 
-
+[numthreads(8, 8, 1)]
+void perlinInjected2N(uint3 id : SV_DispatchThreadID)
+{
+	float2 uv = float2(id.xy + float2(_X, _Z));
+	float n = clamp(fBm(uv, _Octaves, 1), 0, 6);
+	n += clamp(fBm(uv, _Octaves + 1, 1), 0, 16);
+	float ref = clamp(fBm(uv, _Octaves, 3), 0, 4);
+	n += clamp(ridgedmf(uv, 2, _Idk, ref), -1000, 1000);
+	float3 N = float3(id.x, n, id.y);
+	_Result[((id.x + id.y * _Width) * 6) + 0] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 1] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 2] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 3] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 4] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 5] = N;
+}
 
 
 
