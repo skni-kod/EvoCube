@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5b27d748ce8b2d429d2061ccafc2acd, type: 3}
   m_Name: Testowe
   m_EditorClassIdentifier: 
-  frequency: 0.007
+  frequency: 0.006
   lacunarity: 1.21
   gain: 1.51
   seed: 0

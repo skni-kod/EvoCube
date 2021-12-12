@@ -6,7 +6,7 @@ using UnityEngine.Rendering;
 
 public class PerlinGenerator : IObjectPool
 {
-    public static ComputeShader m_perlinNoise;
+    public ComputeShader m_perlinNoise;
     private ComputeBuffer m_noiseBuffer;
     private static int N = 8;
     public Vector3 chunkId = new Vector3(0, 0, 0);
@@ -23,9 +23,15 @@ public class PerlinGenerator : IObjectPool
         m_noiseBuffer.Release();
     }
 
+    public void Reload()
+    {
+        Init();
+        ReloadSettings();
+    }
+
     public void Init()
     {
-        m_perlinNoise = Resources.Load<ComputeShader>("Shaders/ComputeShaders/ImprovedPerlinNoise2D");
+        m_perlinNoise = Object.Instantiate(Resources.Load<ComputeShader>("Shaders/ComputeShaders/ImprovedPerlinNoise2D"));
         m_noiseBuffer = new ComputeBuffer((LowPolyTerrain.instance.chunk_size + N) * (LowPolyTerrain.instance.chunk_size + N) * 6, sizeof(float)*3);
         m_perlinNoise.SetInt("_Width", LowPolyTerrain.instance.chunk_size + N);
         m_perlinNoise.SetTexture(PerlinAPI.p2d.type, "_PermTable1D", PerlinAPI.perlin.PermutationTable1D);
@@ -76,12 +82,6 @@ public class PerlinGenerator : IObjectPool
     }
 
     #endregion
-
-
-    #region Thread Methods
-
-    #endregion
-
 
 
 }

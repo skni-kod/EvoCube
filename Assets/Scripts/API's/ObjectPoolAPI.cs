@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
 using System.Threading;
 using System;
 using System.Collections.Concurrent;
@@ -12,6 +11,7 @@ public interface IObjectPool
 {
     public void Init();
     public void OnRelease();
+    public void Reload();
 }
 
 public static class ObjectPoolAPI
@@ -42,6 +42,13 @@ public class ObjectPool <T> where T : IObjectPool, new()
         Init();
     }
 
+    public void ReloadPool()
+    {
+        List<T> items = container.ForcedClear();
+        items.ForEach(item => item.Reload());
+        items.ForEach(item => container.Enqueue(item));
+    }
+
     public void ClearPool()
     {
         List<T> items = container.ForcedClear();
@@ -58,16 +65,21 @@ public class ObjectPool <T> where T : IObjectPool, new()
         container.Enqueue(item);
     }
 
-    private void Init()
+    public void RepopulatePool()
     {
-        if (_registered)
-            throw new System.Exception($"Already Initialized Object Pool: id: {Id}, type container: {typeof(T)}");
-        for (int i = 0;i < size;i++)
+        for (int i = 0; i < size && container.Count < size; i++)
         {
             T obj = new T();
             obj.Init();
             container.Enqueue(obj);
         }
+    }
+
+    private void Init()
+    {
+        if (_registered)
+            throw new System.Exception($"Already Initialized Object Pool: id: {Id}, type container: {typeof(T)}");
+        RepopulatePool();
         ObjectPoolAPI.Register<T>(this);
     }
 

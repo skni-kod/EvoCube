@@ -194,7 +194,7 @@ PrefabInstance:
         type: 3}
       propertyPath: p2d_to_set
       value: 
-      objectReference: {fileID: 11400000, guid: 0f8afc90f0a0b2145a57983fb16df525,
+      objectReference: {fileID: 11400000, guid: 4a88f16ac6b2ef1468f2285c53e0bb16,
         type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1a6571119f8fa6641aa03f481771b45c, type: 3}
@@ -324,6 +324,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 3
+  movement_speed: 500
 --- !u!1 &1023721095
 GameObject:
   m_ObjectHideFlags: 0
@@ -497,8 +498,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 037fe6e067def894f896d5d4dfc70be8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  chunk_size: 22
-  spawn_later: []
+  chunk_size: 64
+  seed: 0
+  rebuildOnSeedChange: 1
+  generationRadius: 6
+  despawnRadius: 9
+  perlinGeneratorsAmount: 4
 --- !u!4 &1267321859
 Transform:
   m_ObjectHideFlags: 0
