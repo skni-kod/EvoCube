@@ -9,21 +9,16 @@ public class Chunk : MonoBehaviour
     MeshFilter meshFilter;
     MeshRenderer meshRenderer;
     [SerializeField] public int size = 128;
-    [SerializeField] public int offsetX = 0;
-    [SerializeField] public int offsetY = 0;
-    [SerializeField] public int offsetZ = 0;
 
     public void Init(Vector3 id)
     {
-
-
         this.id = id;
         meshFilter = gameObject.AddComponent<MeshFilter>();
         meshRenderer = gameObject.AddComponent<MeshRenderer>();
         Mesh mesh = new Mesh();
         MeshCollider collider = gameObject.AddComponent<MeshCollider>();
 
-        mesh.vertices = MeshAPI.CreateVerticesFlat(size + 1, 1, PerlinAPI.GPUPerlin2D(size + 1, terrainReference.p2d.seed + 1, new Vector2(offsetX, offsetZ), terrainReference.p2d.gain, terrainReference.p2d.frequency, terrainReference.p2d.lacunarity, terrainReference.p2d.idk, terrainReference.p2d.type, terrainReference.p2d.octaves));
+        mesh.vertices = MeshAPI.CreateVerticesFlat(size + 1, 1, PerlinAPI.GPUPerlin2D(size + 1, id*size));
         mesh.triangles = MeshAPI.CalculateTrianglesFlat(size);
         mesh.RecalculateNormals();
         meshRenderer.material = MaterialsAPI.GetMaterialByName("sand");
@@ -31,9 +26,19 @@ public class Chunk : MonoBehaviour
         collider.sharedMesh = mesh;
     }
 
-    public void BuildInit()
+    public void BuildInit(Vector3[] vertices, int[] triangles)
     {
+        meshFilter = gameObject.AddComponent<MeshFilter>();
+        meshRenderer = gameObject.AddComponent<MeshRenderer>();
+        Mesh mesh = new Mesh();
+        MeshCollider collider = gameObject.AddComponent<MeshCollider>();
 
+        mesh.vertices = vertices;
+        mesh.triangles = triangles;
+        mesh.RecalculateNormals();
+        meshRenderer.material = MaterialsAPI.GetMaterialByName("sand");
+        meshFilter.mesh = mesh;
+        collider.sharedMesh = mesh;
     }
 
 

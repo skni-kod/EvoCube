@@ -399,6 +399,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 037fe6e067def894f896d5d4dfc70be8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  chunk_size: 64
   p2d: {fileID: 11400000, guid: 0f8afc90f0a0b2145a57983fb16df525, type: 2}
   focusPoints:
   - {fileID: 1023721099}

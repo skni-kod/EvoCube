@@ -217,5 +217,8 @@ public class MeshAPI : MonoBehaviour
         return vertices;
     }
 
+    #region ThreadSafe Methods
+
+    #endregion
 
 }

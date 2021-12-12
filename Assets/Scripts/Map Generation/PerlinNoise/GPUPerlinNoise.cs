@@ -9,6 +9,7 @@ namespace ImprovedPerlinNoiseProject
     public class GPUPerlinNoise
     {
 
+
         public Texture2D PermutationTable1D { get; private set; }
 
         public Texture2D PermutationTable2D { get; private set; }
