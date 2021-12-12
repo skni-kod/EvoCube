@@ -7,14 +7,12 @@ using UnityEngine;
 public class PerlinAPI : MonoBehaviour
 {
     public static ComputeShader m_perlinNoise;
-    static public int chunk_size = 64;
     public static int seed = 0;
     public static GPUPerlinNoise perlin;
     public static Perlin2dSettings p2d;
     [SerializeField] private Perlin2dSettings p2d_to_set;
-    private static int N = 8;
+    public static int N = 8;
     private static PerlinAPI instance = null;
-    private static ComputeBuffer m_noiseBuffer;
 
     protected virtual void Awake()
     {
@@ -35,7 +33,6 @@ public class PerlinAPI : MonoBehaviour
         m_perlinNoise = Resources.Load<ComputeShader>("Shaders/ComputeShaders/ImprovedPerlinNoise2D");
         perlin = new GPUPerlinNoise(seed);
         perlin.LoadResourcesFor2DNoise();
-        m_noiseBuffer = new ComputeBuffer(chunk_size * chunk_size, sizeof(float));
     }
 
     #region Main Methods
@@ -45,7 +42,7 @@ public class PerlinAPI : MonoBehaviour
         int corrected_size = size;
         while (corrected_size % N != 0)
             corrected_size++;
-        float[] map = GPUPerlin2dMAP(offset, corrected_size);
+        //float[] map = GPUPerlin2dMAP(offset, corrected_size);
         float[] new_map = new float[size * size];
         int idx = 0;
         for (int y = 0; y < corrected_size; y++)
@@ -54,20 +51,20 @@ public class PerlinAPI : MonoBehaviour
             {
                 if (x < size && y < size)
                 {
-                    new_map[idx++] = map[x + y * corrected_size];
+                    //new_map[idx++] = map[x + y * corrected_size];
                 }
             }
         }
         return new_map;
     }
 
-    private static float[] GPUPerlin2dMAP(Vector3 offset, int size)
+    /*private static float[] GPUPerlin2dMAP(Vector3 offset, int size)
     {
         if (p2d.type > 4 || p2d.type <0)
         {
             throw new System.ArgumentException("Ther is no such type");
         }
-        if (chunk_size % N != 0)
+        //if (chunk_size % N != 0)
         {
             //There are 9 threads run per group so size must be divisible by N.
             throw new System.ArgumentException("N must be divisible be {N}");
@@ -89,17 +86,17 @@ public class PerlinAPI : MonoBehaviour
         m_perlinNoise.SetFloat("_Gain", p2d.gain);
         m_perlinNoise.SetTexture(p2d.type, "_PermTable1D", perlin.PermutationTable1D);
         m_perlinNoise.SetTexture(p2d.type, "_Gradient2D", perlin.Gradient2D);
-        m_perlinNoise.SetBuffer(p2d.type, "_Result", m_noiseBuffer);
+        //m_perlinNoise.SetBuffer(p2d.type, "_Result", m_noiseBuffer);
 
         m_perlinNoise.Dispatch(p2d.type, size / N, size / N, 1);
         //m_perlinNoise.FindKernel("ridge");
 
         //Get the data out of the buffer.
         float[] verts = new float[size * size];
-        m_noiseBuffer.GetData(verts);
-        m_noiseBuffer.Release();
+        //m_noiseBuffer.GetData(verts);
+        //m_noiseBuffer.Release();
         return verts;
-    }
+    }*/
     #endregion
 
 }

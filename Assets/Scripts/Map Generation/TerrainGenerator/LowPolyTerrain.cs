@@ -13,11 +13,10 @@ public class LowPolyTerrain : MonoBehaviour
     public static LowPolyTerrain instance = null;
     public int chunk_size = 100;
     public Dictionary<Vector3, Chunk> chunks = new Dictionary<Vector3, Chunk>();
-    [SerializeField] public Perlin2dSettings p2d;
     private GPUPerlinNoise perlin;
-    ObjectPool<PerlinGenerator> perlinGeneratorPool;
-    private ConcurrentQueue<MeshBuilder> queue_readyMeshBuilders = new ConcurrentQueue<MeshBuilder>();;
-    private List<Vector3> spawn_later = new List<Vector3>();
+    public ObjectPool<PerlinGenerator> perlinGeneratorPool;
+    private List<PerlinGenerator> queue_PerlinsWaitingForGPU = new List<PerlinGenerator>();
+    public List<Vector3> spawn_later = new List<Vector3>();
 
     #region Unity Methods
 
@@ -41,6 +40,8 @@ public class LowPolyTerrain : MonoBehaviour
     private void Update()
     {
         SeedGenerators();
+        //CheckGenerators();
+        DespawnFarChunks();
     }
 
     private void OnDestroy()
@@ -52,28 +53,67 @@ public class LowPolyTerrain : MonoBehaviour
 
     #region Main Methods
 
+    /*private void CheckGenerators()
+    {
+        List<PerlinGenerator> to_return = new List<PerlinGenerator>();
+        foreach (PerlinGenerator gen in queue_PerlinsWaitingForGPU)
+        {
+            if (true)
+            {
+                GenerateChunk(gen.chunkId, gen.verts);
+                to_return.Add(gen);
+            }
+        }
+
+        foreach (PerlinGenerator gen in to_return)
+        {
+            perlinGeneratorPool.ReturnIntoPool(gen);
+            queue_PerlinsWaitingForGPU.Remove(gen);
+        }
+
+    }*/
+
+    private void DespawnFarChunks()
+    {
+        List<Vector3> chunks_to_remove = new List<Vector3>();
+        foreach(Vector3 chunkId in chunks.Keys)
+        {
+            if (Vector3.Distance(chunkId * chunk_size, PlayerAPI.GetPlayerPosition()) > 600 )
+            {
+                chunks_to_remove.Add(chunkId);
+            }
+        }
+        chunks_to_remove.ForEach(p => chunks[p].MyDestroy());
+        chunks_to_remove.ForEach(p => chunks.Remove(p));
+    }
+
     private void SeedGenerators()
     {
-        List<Vector3> chunksIds = FindChunkIdsAroundAPI.FindChunksIdsAroundSquare(PlayerAPI.GetPlayerPosition(), 2);
+        List<Vector3> chunksIds = FindChunkIdsAroundAPI.FindChunksIdsAroundSquare(PlayerAPI.GetPlayerPosition(), 9);
         foreach (Vector3 chunkId in chunksIds)
         {
-            PerlinGenerator perlinGenerator;
-            if (perlinGeneratorPool.GetOne(out perlinGenerator))
+            if (chunkId.y == 0)
             {
-                perlinGenerator.Generate(chunkId);
-                perlinGeneratorPool.ReturnIntoPool(perlinGenerator);
+                PerlinGenerator perlinGenerator;
+                if (perlinGeneratorPool.GetOne(out perlinGenerator))
+                {
+                    perlinGenerator.Generate(chunkId);
+                    //perlinGeneratorPool.ReturnIntoPool(perlinGenerator);
+                    //queue_PerlinsWaitingForGPU.Add(perlinGenerator);
+                }
+                else
+                {
+                    if (!spawn_later.Contains(chunkId) && !chunks.ContainsKey(chunkId) && false)
+                        spawn_later.Add(chunkId);
+                }
             }
-            else
-            {
-                if (!spawn_later.Contains(chunkId))
-                    spawn_later.Add(chunkId);
-            }
+
         }
     }
 
     private void PreparePools()
     {
-        perlinGeneratorPool = new ObjectPool<PerlinGenerator>(5);
+        perlinGeneratorPool = new ObjectPool<PerlinGenerator>(1);
     }
 
     private void ClearPools()
@@ -81,7 +121,7 @@ public class LowPolyTerrain : MonoBehaviour
         perlinGeneratorPool.ClearPool();
     }
 
-    public bool GenerateChunk(Vector3 id)
+    public bool GenerateChunk(Vector3 id, Vector3[] perlinData)
     {
         if (!chunks.ContainsKey(id))
         {
@@ -91,8 +131,7 @@ public class LowPolyTerrain : MonoBehaviour
             Chunk t = chunk.gameObject.AddComponent<Chunk>();
             chunks.Add(id, t);
             t.terrainReference = this;
-            t.size = chunk_size;
-            t.Init(id);
+            t.BuildInit(id, perlinData);
             return true;
         }
         return false;
@@ -100,19 +139,5 @@ public class LowPolyTerrain : MonoBehaviour
 
     #endregion
 
-    #region Thread Methods
-
-    private void GenerationThread()
-    {
-        
-        for (; ; )
-        {
-            List<Vector3> chunksIds = FindChunkIdsAroundAPI.FindChunksIdsAroundSquare(PlayerAPI.GetPlayerPosition(), 2);
-
-            Thread.Sleep(50);
-        }
-    }
-
-    #endregion
 }
 

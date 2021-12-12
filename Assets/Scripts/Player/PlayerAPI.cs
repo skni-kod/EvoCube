@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerAPI : MonoBehaviour
 {
     [SerializeField] private GameObject playerObject;
-    public static Vector3 playerPosition = new Vector3(0, 0, 0);
+    public Vector3 playerPosition = new Vector3(0, 0, 0);
     public static PlayerAPI instance;
 
     protected virtual void Awake()
@@ -23,7 +23,7 @@ public class PlayerAPI : MonoBehaviour
 
     public static Vector3 GetPlayerPosition()
     {
-        return playerPosition;
+        return PlayerAPI.instance.playerPosition;
     }
 
 }

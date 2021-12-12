@@ -201,23 +201,73 @@ public class MeshAPI : MonoBehaviour
     public static Vector3[] CreateVerticesFlat(int size, float resolution, float[] data = null)
     {
         Vector3[] vertices = new Vector3[size * size * 6];
+
         for (int y = 0; y < size; y++)
         {
             for (int x = 0; x < size; x++)
             {
-                for (int g = 0; g < 6; g++)
+                /*for (int g = 0; g < 6; g++)
                 {
                     if (data == null)
                         vertices[6*(x + (y * size)) + g] = new Vector3(x * resolution, 0, y * resolution);
                     else
                         vertices[6*(x + (y * size)) + g] = new Vector3(x * resolution, data[x + y * size], y * resolution);
-                }
+                    
+                }*/
+                vertices[x + (y * size)] = new Vector3(x * resolution, data[x + y * size], y * resolution);
             }
         }
         return vertices;
     }
 
     #region ThreadSafe Methods
+
+    public static Vector3[] ResizePerlinVerticesDown(Vector3[] data)
+    {
+        int size = (int)Mathf.Sqrt(data.Length / 6);
+        int small_size = size - PerlinAPI.N + 1;
+        Vector3[] new_data = new Vector3[small_size * small_size * 6];
+        int idx = 0;
+        for (int y = 0; y < size; y++)
+        {
+            for (int x = 0; x < size; x++)
+            {
+                if (x < small_size && y < small_size)
+                {
+                    for (int g = 0; g < 6; g++)
+                    {
+                        new_data[idx++] = data[(x * 6) + (y * size * 6) + g];
+                    }
+                }
+            }
+        }
+        return new_data;
+
+    }
+
+    public static float[] Resize2dArrayFlat(float[] array)
+    {
+        int bigger_size = (int)Mathf.Sqrt(array.Length/6);
+        int smaller_size = bigger_size - PerlinAPI.N + 1;
+        float[] newArray = new float[smaller_size * smaller_size * 6];
+        
+
+        int idx = 0;
+        for (int y = 0; y < bigger_size; y++)
+        {
+            for (int x = 0; x < bigger_size; x++)
+            {
+                if (x < smaller_size && y < smaller_size)
+                {
+                    for (int g = 0; g < 6; g++)
+                    {
+                        newArray[idx++] = array[(6* x) + (6*y) * (smaller_size) + g];
+                    }
+                }
+            }
+        }
+        return newArray;
+    }
 
     #endregion
 

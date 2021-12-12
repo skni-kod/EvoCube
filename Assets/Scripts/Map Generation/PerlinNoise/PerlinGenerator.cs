@@ -9,7 +9,7 @@ public class PerlinGenerator : IObjectPool
     public static ComputeShader m_perlinNoise;
     private ComputeBuffer m_noiseBuffer;
     private static int N = 8;
-    private float[] verts = new float[PerlinAPI.chunk_size * PerlinAPI.chunk_size];
+    public Vector3 chunkId = new Vector3(0, 0, 0);
 
 
     #region Main Methods
@@ -26,8 +26,8 @@ public class PerlinGenerator : IObjectPool
     public void Init()
     {
         m_perlinNoise = Resources.Load<ComputeShader>("Shaders/ComputeShaders/ImprovedPerlinNoise2D");
-        m_noiseBuffer = new ComputeBuffer(PerlinAPI.chunk_size * PerlinAPI.chunk_size, sizeof(float));
-        m_perlinNoise.SetInt("_Width", PerlinAPI.chunk_size);
+        m_noiseBuffer = new ComputeBuffer((LowPolyTerrain.instance.chunk_size + N) * (LowPolyTerrain.instance.chunk_size + N) * 6, sizeof(float)*3);
+        m_perlinNoise.SetInt("_Width", LowPolyTerrain.instance.chunk_size + N);
         m_perlinNoise.SetTexture(PerlinAPI.p2d.type, "_PermTable1D", PerlinAPI.perlin.PermutationTable1D);
         m_perlinNoise.SetTexture(PerlinAPI.p2d.type, "_Gradient2D", PerlinAPI.perlin.Gradient2D);
         m_perlinNoise.SetBuffer(PerlinAPI.p2d.type, "_Result", m_noiseBuffer);
@@ -45,17 +45,34 @@ public class PerlinGenerator : IObjectPool
 
     public void Generate(Vector3 offset)
     {
-        m_perlinNoise.SetFloat("_X", offset.x);
-        m_perlinNoise.SetFloat("_Z", offset.z);
-        m_perlinNoise.Dispatch(PerlinAPI.p2d.type, PerlinAPI.chunk_size / N, PerlinAPI.chunk_size / N, 1);
-        AsyncGPUReadback.Request(m_noiseBuffer, GetNoiseDataCallback);
+        if (true)
+        {
+            chunkId = offset;
+            m_perlinNoise.SetFloat("_X", offset.x * LowPolyTerrain.instance.chunk_size);
+            m_perlinNoise.SetFloat("_Y", offset.y * LowPolyTerrain.instance.chunk_size);
+            m_perlinNoise.SetFloat("_Z", offset.z * LowPolyTerrain.instance.chunk_size);
+            m_perlinNoise.Dispatch(PerlinAPI.p2d.type, (LowPolyTerrain.instance.chunk_size + N) / N, (LowPolyTerrain.instance.chunk_size + N) / N, 1);
+            AsyncGPUReadback.Request(m_noiseBuffer, GetNoiseDataCallback);
+            //AsyncGPUReadback.WaitAllRequests();
+        }
     }
 
     public void GetNoiseDataCallback(AsyncGPUReadbackRequest request)
     {
-        request.WaitForCompletion();
-        verts = request.GetData<float>().ToArray();
-        LowPolyTerrain.instance.GenerateChunk(verts);
+        if (LowPolyTerrain.instance == null)
+            return;
+        if (!LowPolyTerrain.instance.chunks.ContainsKey(chunkId))
+        {
+            GameObject chunk = new GameObject();
+            chunk.transform.position = new Vector3(chunkId.x * LowPolyTerrain.instance.chunk_size, chunkId.y * LowPolyTerrain.instance.chunk_size, chunkId.z * LowPolyTerrain.instance.chunk_size);
+            chunk.transform.parent = LowPolyTerrain.instance.transform;
+            Chunk t = chunk.gameObject.AddComponent<Chunk>();
+            LowPolyTerrain.instance.chunks.Add(chunkId, t);
+            t.terrainReference = LowPolyTerrain.instance;
+            t.BuildInit(chunkId, request.GetData<Vector3>().ToArray());
+        }
+        LowPolyTerrain.instance.perlinGeneratorPool.ReturnIntoPool(this);
+
     }
 
     #endregion

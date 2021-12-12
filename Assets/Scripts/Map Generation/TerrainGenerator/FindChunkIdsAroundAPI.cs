@@ -11,9 +11,9 @@ public static class FindChunkIdsAroundAPI
         int size = LowPolyTerrain.instance.chunk_size;
         List<Vector3> foundChunks = new List<Vector3>();
         Vector3 center = new Vector3(
-                                     Mathf.FloorToInt(focusPoint.x / size) * size,
-                                     Mathf.FloorToInt(focusPoint.y / size) * size,
-                                     Mathf.FloorToInt(focusPoint.z / size) * size
+                                     Mathf.FloorToInt(focusPoint.x / size),
+                                     Mathf.FloorToInt(focusPoint.y / size),
+                                     Mathf.FloorToInt(focusPoint.z / size)
                                      );
 
         for (int x = -range;x<range;x++)
@@ -22,13 +22,13 @@ public static class FindChunkIdsAroundAPI
             {
                 for (int z = -range; z < range; z++)
                 {
-                    Vector3 id = new Vector3(x, y, z);
+                    Vector3 id = new Vector3(x, y, z) + center;
                     if (!LowPolyTerrain.instance.chunks.ContainsKey(id))
                         foundChunks.Add(id);
                 }
             }
         }
-
+        foundChunks.Sort((v1, v2) => (v1 - center).sqrMagnitude.CompareTo((v2 - center).sqrMagnitude));
         return foundChunks;
     }
 

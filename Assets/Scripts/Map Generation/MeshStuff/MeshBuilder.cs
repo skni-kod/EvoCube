@@ -36,9 +36,8 @@ public class MeshBuilder
         Chunk t = chunk.gameObject.AddComponent<Chunk>();
         terrain_ref.chunks.Add(id, t);
         t.terrainReference = terrain_ref;
-        t.size = terrain_ref.chunk_size;
         t.id = id;
-        t.BuildInit(vertices, triangles);
+        //t.BuildInit(vertices, triangles);
         return chunk;
 
     }
