@@ -80,7 +80,7 @@ public class MultiLegWalkerCode : MonoBehaviour
 
         Vector3 TargetDirection = Vector3.Slerp(transform.forward, FaceDirection, Time.deltaTime*TurnSpeed);
         transform.rotation =Quaternion.LookRotation(Vector3.Slerp(transform.forward, (FaceDirection-transform.position), Time.deltaTime*TurnSpeed), Vector3.up);
-        
+        MoveDirection = (FaceDirection - transform.position);
 
         transform.position = GetAvgLegPosition() + Vector3.up * stance + transform.forward * hipOffset.z *-1f;
         
