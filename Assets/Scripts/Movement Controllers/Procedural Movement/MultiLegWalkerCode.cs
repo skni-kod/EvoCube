@@ -79,7 +79,8 @@ public class MultiLegWalkerCode : MonoBehaviour
     {
 
         Vector3 TargetDirection = Vector3.Slerp(transform.forward, FaceDirection, Time.deltaTime*TurnSpeed);
-        transform.rotation = Quaternion.LookRotation(TargetDirection, Vector3.up);
+        transform.rotation =Quaternion.LookRotation(Vector3.Slerp(transform.forward, (FaceDirection-transform.position), Time.deltaTime*TurnSpeed), Vector3.up);
+        MoveDirection = (FaceDirection - transform.position);
 
         transform.position = GetAvgLegPosition() + Vector3.up * stance + transform.forward * hipOffset.z *-1f;
         
@@ -190,7 +191,7 @@ public class MultiLegWalkerCode : MonoBehaviour
     {
         int layerMask = 1 << 8;
         layerMask = ~layerMask;
-
+     
         RaycastHit hit;
 
         if (Physics.Raycast(origin, localUp * -10f, out hit, Mathf.Infinity, layerMask))

@@ -11,7 +11,7 @@ public class EnemyHpUI : MonoBehaviour
     public GameObject hpBar;
     private void Start()
     {
-        maxHp = GetComponentInParent<Enemy>().HP;
+        maxHp = GetComponentInParent<Enemy>().stats.HP;
         camera = Camera.main.gameObject;
     }
     private void Update()
