@@ -9,14 +9,14 @@ public class OnClickInventory : MonoBehaviour, IPointerEnterHandler, IPointerExi
 {
     public GameObject panel;
     GraphicRaycaster raycaster;
-    [SerializeField] public UnityEvent e;
+    //[SerializeField] public UnityEvent e;
     private bool isOn;
     private bool mouseIsOver;
     public delegate void OnBlikEndEvent();
 
     void Start()
     {
-        isOn = panel.active;
+        isOn = panel.activeInHierarchy;
     }
     void Awake()
     {
@@ -25,7 +25,6 @@ public class OnClickInventory : MonoBehaviour, IPointerEnterHandler, IPointerExi
     }
     void Update()
     {
-
         if (isOn)
         {
             if (Input.GetKeyDown(KeyCode.I))
@@ -45,7 +44,7 @@ public class OnClickInventory : MonoBehaviour, IPointerEnterHandler, IPointerExi
             }
 
         }
-        else
+        else if(!isOn)
         {
             if (Input.GetKeyDown(KeyCode.I))
             {

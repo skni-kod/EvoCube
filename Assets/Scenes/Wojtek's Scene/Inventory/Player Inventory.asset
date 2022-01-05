@@ -12,4 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0d45bda191802478e3f17d354e66ac, type: 3}
   m_Name: Player Inventory
   m_EditorClassIdentifier: 
+  savePath: /inventory.Save
+  database: {fileID: 11400000, guid: 791584ad9d76f944c8b3dc71f4c375a0, type: 2}
   Container: []

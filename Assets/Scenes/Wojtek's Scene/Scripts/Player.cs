@@ -16,6 +16,18 @@ public class Player : MonoBehaviour
         }
     }
 
+    public void Update()
+    {
+        if(Input.GetKeyDown(KeyCode.Space))
+        {
+            inventory.Save();
+        }
+        if (Input.GetKeyDown(KeyCode.KeypadEnter))
+        {
+            inventory.Load();
+        }
+    }
+
     public void OnApplicationQuit()
     {
         inventory.Container.Clear();

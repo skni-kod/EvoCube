@@ -8,11 +8,11 @@ public class DisplayInventory : MonoBehaviour
 {
     public InventoryObject inventory;
 
-    public int X_START;
-    public int Y_START;
-    public int X_SPACE_BETWEEN_ITEM;
-    public int NUMBER_OF_COLUMN;
-    public int Y_SPACE_BETWEEN_ITEMS;
+    public int X_START = -550;
+    public int Y_START = 180;
+    public int X_SPACE_BETWEEN_ITEM = 120;
+    public int NUMBER_OF_COLUMN = 10;
+    public int Y_SPACE_BETWEEN_ITEMS = 120;
     Dictionary<InventorySlot, GameObject> itemsDisplayed = new Dictionary<InventorySlot, GameObject>();
     void Start()
     {
