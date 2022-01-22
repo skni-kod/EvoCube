@@ -16,14 +16,15 @@ public class PlayerAPI : MonoBehaviour
             Destroy(gameObject);
     }
 
-    private void Update()
-    {
-        playerPosition = playerObject.transform.position;
-    }
 
     public static Vector3 GetPlayerPosition()
     {
-        return PlayerAPI.instance.playerPosition;
+        return PlayerAPI.instance.playerObject.transform.position;
+    }
+
+    public static GameObject GetPlayerObject()
+    {
+        return PlayerAPI.instance.playerObject;
     }
 
 }

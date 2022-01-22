@@ -6,9 +6,9 @@ Texture2D _PermTable2D, _Gradient3D;
 
 float _Frequency, _Lacunarity, _Gain;
 
-int _X;
-int _Y;
-int _Z;
+float _X;
+float _Y;
+float _Z;
 
 int _Width, _Height;
 
