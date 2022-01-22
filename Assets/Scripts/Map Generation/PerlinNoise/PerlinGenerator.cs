@@ -74,7 +74,7 @@ public class PerlinGenerator : IObjectPool
             chunk.transform.parent = LowPolyTerrain.instance.transform;
             Chunk t = chunk.gameObject.AddComponent<Chunk>();
             LowPolyTerrain.instance.chunks.Add(chunkId, t);
-            t.terrainReference = LowPolyTerrain.instance;
+            //t.terrainReference = LowPolyTerrain.instance; //do sprawdzenia
             t.BuildInit(chunkId, request.GetData<Vector3>().ToArray());
         }
         LowPolyTerrain.instance.perlinGeneratorPool.ReturnIntoPool(this);

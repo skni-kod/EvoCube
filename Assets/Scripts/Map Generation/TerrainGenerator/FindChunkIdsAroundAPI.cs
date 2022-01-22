@@ -16,7 +16,7 @@ public static class FindChunkIdsAroundAPI
                                      Mathf.FloorToInt(focusPoint.z / size)
                                      );
 
-        for (int x = -range;x<range;x++)
+        for (int x = -range; x < range;x++)
         {
             for (int y = -range; y < range; y++)
             {
@@ -28,7 +28,7 @@ public static class FindChunkIdsAroundAPI
                 }
             }
         }
-        foundChunks.Sort((v1, v2) => (v1 - center).sqrMagnitude.CompareTo((v2 - center).sqrMagnitude));
+        //foundChunks.Sort((v1, v2) => (v1 - center).sqrMagnitude.CompareTo((v2 - center).sqrMagnitude));
         return foundChunks;
     }
 

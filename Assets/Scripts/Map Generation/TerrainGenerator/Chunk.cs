@@ -5,7 +5,6 @@ using UnityEngine;
 public class Chunk : MonoBehaviour
 {
     public Vector3 id;
-    public LowPolyTerrain terrainReference;
     MeshFilter meshFilter;
     MeshRenderer meshRenderer;
 

@@ -35,7 +35,6 @@ public class MeshBuilder
         chunk.transform.parent = terrain_ref.transform;
         Chunk t = chunk.gameObject.AddComponent<Chunk>();
         terrain_ref.chunks.Add(id, t);
-        t.terrainReference = terrain_ref;
         t.id = id;
         //t.BuildInit(vertices, triangles);
         return chunk;

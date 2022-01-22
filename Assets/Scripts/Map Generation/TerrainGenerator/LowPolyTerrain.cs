@@ -103,13 +103,14 @@ public class LowPolyTerrain : MonoBehaviour
         List<Vector3> chunksIds = FindChunkIdsAroundAPI.FindChunksIdsAroundSquare(PlayerAPI.GetPlayerPosition(), generationRadius);
         foreach (Vector3 chunkId in chunksIds)
         {
-            if (chunkId.y == 0)
+            if (chunkId.y == 0 && !chunks.ContainsKey(chunkId))
             {
                 PerlinGenerator perlinGenerator;
                 if (perlinGeneratorPool.GetOne(out perlinGenerator))
                 {
                     perlinGenerator.Generate(chunkId);
                 }
+                break;
             }
 
         }
@@ -134,7 +135,7 @@ public class LowPolyTerrain : MonoBehaviour
             chunk.transform.parent = transform;
             Chunk t = chunk.gameObject.AddComponent<Chunk>();
             chunks.Add(id, t);
-            t.terrainReference = this;
+            //t.terrainReference = this;
             t.BuildInit(id, perlinData);
             return true;
         }
