@@ -77,3 +77,8 @@ crashlytics-build.properties
 .gitconfig
 .gitconfig
 .claudiaideconfig
+
+# Żabowe Rzeczy
+/Assets/ADG_Textures
+/Assets/Darth_Artisan
+/Assets/Fantasy_Skybox_FREE
