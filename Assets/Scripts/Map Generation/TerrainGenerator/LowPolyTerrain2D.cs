@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 using ImprovedPerlinNoiseProject;
 using UnityEngine.Rendering;
 
-public class LowPolyTerrain : MonoBehaviour
+public class LowPolyTerrain2D : MonoBehaviour
 {
-    public static LowPolyTerrain instance = null;
+    public static LowPolyTerrain2D instance = null;
     public int chunk_size = 100;
     public Dictionary<Vector3, Chunk> chunks = new Dictionary<Vector3, Chunk>();
     public ObjectPool<PerlinGenerator> perlinGeneratorPool;

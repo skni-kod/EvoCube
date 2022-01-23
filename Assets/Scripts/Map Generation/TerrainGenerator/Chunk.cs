@@ -17,7 +17,7 @@ public class Chunk : MonoBehaviour
         MeshCollider collider = gameObject.AddComponent<MeshCollider>();
 
         mesh.vertices = MeshAPI.ResizePerlinVerticesDown(perlinData);
-        mesh.triangles = MeshAPI.CalculateTrianglesFlat(LowPolyTerrain.instance.chunk_size);
+        mesh.triangles = MeshAPI.CalculateTrianglesFlat(LowPolyTerrain2D.instance.chunk_size);
         mesh.RecalculateNormals();
         meshRenderer.material = MaterialsAPI.GetMaterialByName("sand");
         meshFilter.mesh = mesh;

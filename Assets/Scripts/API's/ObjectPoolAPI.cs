@@ -7,9 +7,15 @@ using System.Collections.Concurrent;
 using System.Threading.Tasks;
 
 
-public interface IObjectPool
+public interface IPooledObject
 {
+    /// <summary>
+    /// Initializes object
+    /// </summary>
     public void Init();
+    /// <summary>
+    /// All buffers should be included here, or rather all the stuff that needs to be destroyed -> remember memory leaks
+    /// </summary>
     public void OnRelease();
     public void Reload();
 }
@@ -18,14 +24,14 @@ public static class ObjectPoolAPI
 {
     private static ConcurrentDictionary<int, object> pool_registry = new ConcurrentDictionary<int, object>();
 
-    public static void Register<T>(ObjectPool<T> obj) where T : IObjectPool, new()
+    public static void Register<T>(ObjectPool<T> obj) where T : IPooledObject, new()
     {
         obj.Id = pool_registry.Count;
         pool_registry.ForcedAdd(pool_registry.Count, obj);
     }
 }
 
-public class ObjectPool <T> where T : IObjectPool, new()
+public class ObjectPool <T> where T : IPooledObject, new()
 { 
     public int Id;
     public int size;

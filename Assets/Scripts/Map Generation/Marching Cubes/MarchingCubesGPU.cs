@@ -40,11 +40,12 @@ namespace MarchingCubesGPUProject
             //marching cube can produce, 5 triangles for each voxel.
             SIZE = N * N * N * 3 * 5;
             Generate();
+
         }
 
         private void Update()
         {
-
+            //ClearChunk();
         }
 
         private void ClearChunk()

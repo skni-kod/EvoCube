@@ -25,7 +25,7 @@ public class MeshBuilder
 
     #region Main Methods
 
-    public GameObject ExtractChunk(LowPolyTerrain terrain_ref)
+    public GameObject ExtractChunk(LowPolyTerrain2D terrain_ref)
     {
         if (terrain_ref.chunks.ContainsKey(id))
             return null;
