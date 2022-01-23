@@ -6,9 +6,8 @@ using System.Collections.Generic;
 public static class FindChunkIdsAroundAPI
 {
 
-    public static List<Vector3> FindChunksIdsAroundSquare(Vector3 focusPoint, int range)
+    public static List<Vector3> FindChunksIdsAroundSquare(Vector3 focusPoint, int range, int size)
     {
-        int size = LowPolyTerrain.instance.chunk_size;
         List<Vector3> foundChunks = new List<Vector3>();
         Vector3 center = new Vector3(
                                      Mathf.FloorToInt(focusPoint.x / size),
@@ -16,19 +15,18 @@ public static class FindChunkIdsAroundAPI
                                      Mathf.FloorToInt(focusPoint.z / size)
                                      );
 
-        for (int x = -range;x<range;x++)
+        for (int x = -range; x < range;x++)
         {
             for (int y = -range; y < range; y++)
             {
                 for (int z = -range; z < range; z++)
                 {
                     Vector3 id = new Vector3(x, y, z) + center;
-                    if (!LowPolyTerrain.instance.chunks.ContainsKey(id))
-                        foundChunks.Add(id);
+                    foundChunks.Add(id);
                 }
             }
         }
-        foundChunks.Sort((v1, v2) => (v1 - center).sqrMagnitude.CompareTo((v2 - center).sqrMagnitude));
+        //foundChunks.Sort((v1, v2) => (v1 - center).sqrMagnitude.CompareTo((v2 - center).sqrMagnitude));
         return foundChunks;
     }
 

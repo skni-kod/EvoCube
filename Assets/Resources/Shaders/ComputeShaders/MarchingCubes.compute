@@ -23,6 +23,7 @@ Texture3D<float3> _Normals;
 
 RWStructuredBuffer<Vert> _Buffer;
 
+
 // edgeConnection lists the index of the endpoint vertices for each of the 12 edges of the cube
 static int2 edgeConnection[12] =
 {
@@ -126,17 +127,17 @@ void CSMain(int3 id : SV_DispatchThreadID)
 	for (i = 0; i < 5; i++)
 	{
 		//If the connection table is not -1 then this a triangle.
-		if (_TriangleConnectionTable[flagIndex * 16 + 3 * i] >= 0)
+        if (_TriangleConnectionTable[flagIndex * 16 + (3 * i)] >= 0)
 		{
 			float3 position;
 
-			position = edgeVertex[_TriangleConnectionTable[flagIndex * 16 + (3 * i + 0)]];
+            position = edgeVertex[_TriangleConnectionTable[(flagIndex * 16) + (3 * i + 0)]];
 			_Buffer[idx * 15 + (3 * i + 0)] = CreateVertex(position, centre, size);
 
-			position = edgeVertex[_TriangleConnectionTable[flagIndex * 16 + (3 * i + 1)]];
+            position = edgeVertex[_TriangleConnectionTable[(flagIndex * 16) + (3 * i + 1)]];
 			_Buffer[idx * 15 + (3 * i + 1)] = CreateVertex(position, centre, size);
 
-			position = edgeVertex[_TriangleConnectionTable[flagIndex * 16 + (3 * i + 2)]];
+            position = edgeVertex[_TriangleConnectionTable[(flagIndex * 16) + (3 * i + 1)]];
 			_Buffer[idx * 15 + (3 * i + 2)] = CreateVertex(position, centre, size);
 		}
 	}

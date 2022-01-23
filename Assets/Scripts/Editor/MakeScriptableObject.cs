@@ -17,5 +17,18 @@ public class MakeScriptableObject
         Selection.activeObject = asset;
     }
 
+    [MenuItem("Assets/Create/MapGenSettings")]
+    public static void CreateMyAssetMapSettings()
+    {
+        MapGenSettings asset = ScriptableObject.CreateInstance<MapGenSettings>();
+
+        AssetDatabase.CreateAsset(asset, "Assets/MapGenSettings.asset");
+        AssetDatabase.SaveAssets();
+
+        EditorUtility.FocusProjectWindow();
+
+        Selection.activeObject = asset;
+    }
+
 
 }

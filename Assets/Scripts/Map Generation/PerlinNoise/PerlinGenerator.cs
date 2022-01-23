@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-public class PerlinGenerator : IObjectPool
+public class PerlinGenerator : IPooledObject
 {
     public ComputeShader m_perlinNoise;
     private ComputeBuffer m_noiseBuffer;
@@ -26,14 +26,14 @@ public class PerlinGenerator : IObjectPool
     public void Reload()
     {
         Init();
-        ReloadSettings();
+        //ReloadSettings();
     }
 
     public void Init()
     {
         m_perlinNoise = Object.Instantiate(Resources.Load<ComputeShader>("Shaders/ComputeShaders/ImprovedPerlinNoise2D"));
-        m_noiseBuffer = new ComputeBuffer((LowPolyTerrain.instance.chunk_size + N) * (LowPolyTerrain.instance.chunk_size + N) * 6, sizeof(float)*3);
-        m_perlinNoise.SetInt("_Width", LowPolyTerrain.instance.chunk_size + N);
+        m_noiseBuffer = new ComputeBuffer((LowPolyTerrain2D.instance.chunk_size + N) * (LowPolyTerrain2D.instance.chunk_size + N) * 6, sizeof(float)*3);
+        m_perlinNoise.SetInt("_Width", LowPolyTerrain2D.instance.chunk_size + N);
         m_perlinNoise.SetTexture(PerlinAPI.p2d.type, "_PermTable1D", PerlinAPI.perlin.PermutationTable1D);
         m_perlinNoise.SetTexture(PerlinAPI.p2d.type, "_Gradient2D", PerlinAPI.perlin.Gradient2D);
         m_perlinNoise.SetBuffer(PerlinAPI.p2d.type, "_Result", m_noiseBuffer);
@@ -51,13 +51,13 @@ public class PerlinGenerator : IObjectPool
 
     public void Generate(Vector3 offset)
     {
-        if (true)
+        if (true) // wtf?
         {
             chunkId = offset;
-            m_perlinNoise.SetFloat("_X", offset.x * LowPolyTerrain.instance.chunk_size);
-            m_perlinNoise.SetFloat("_Y", offset.y * LowPolyTerrain.instance.chunk_size);
-            m_perlinNoise.SetFloat("_Z", offset.z * LowPolyTerrain.instance.chunk_size);
-            m_perlinNoise.Dispatch(PerlinAPI.p2d.type, (LowPolyTerrain.instance.chunk_size + N) / N, (LowPolyTerrain.instance.chunk_size + N) / N, 1);
+            m_perlinNoise.SetFloat("_X", offset.x * LowPolyTerrain2D.instance.chunk_size);
+            m_perlinNoise.SetFloat("_Y", offset.y * LowPolyTerrain2D.instance.chunk_size);
+            m_perlinNoise.SetFloat("_Z", offset.z * LowPolyTerrain2D.instance.chunk_size);
+            m_perlinNoise.Dispatch(PerlinAPI.p2d.type, (LowPolyTerrain2D.instance.chunk_size + N) / N, (LowPolyTerrain2D.instance.chunk_size + N) / N, 1);
             AsyncGPUReadback.Request(m_noiseBuffer, GetNoiseDataCallback);
             //AsyncGPUReadback.WaitAllRequests();
         }
@@ -65,19 +65,19 @@ public class PerlinGenerator : IObjectPool
 
     public void GetNoiseDataCallback(AsyncGPUReadbackRequest request)
     {
-        if (LowPolyTerrain.instance == null)
+        if (LowPolyTerrain2D.instance == null)
             return;
-        if (!LowPolyTerrain.instance.chunks.ContainsKey(chunkId))
+        if (!LowPolyTerrain2D.instance.chunks.ContainsKey(chunkId))
         {
             GameObject chunk = new GameObject();
-            chunk.transform.position = new Vector3(chunkId.x * LowPolyTerrain.instance.chunk_size, chunkId.y * LowPolyTerrain.instance.chunk_size, chunkId.z * LowPolyTerrain.instance.chunk_size);
-            chunk.transform.parent = LowPolyTerrain.instance.transform;
+            chunk.transform.position = new Vector3(chunkId.x * LowPolyTerrain2D.instance.chunk_size, chunkId.y * LowPolyTerrain2D.instance.chunk_size, chunkId.z * LowPolyTerrain2D.instance.chunk_size);
+            chunk.transform.parent = LowPolyTerrain2D.instance.transform;
             Chunk t = chunk.gameObject.AddComponent<Chunk>();
-            LowPolyTerrain.instance.chunks.Add(chunkId, t);
-            t.terrainReference = LowPolyTerrain.instance;
+            LowPolyTerrain2D.instance.chunks.Add(chunkId, t);
+            //t.terrainReference = LowPolyTerrain.instance; //do sprawdzenia
             t.BuildInit(chunkId, request.GetData<Vector3>().ToArray());
         }
-        LowPolyTerrain.instance.perlinGeneratorPool.ReturnIntoPool(this);
+        LowPolyTerrain2D.instance.perlinGeneratorPool.ReturnIntoPool(this);
 
     }
 

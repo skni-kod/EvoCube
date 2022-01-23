@@ -22,5 +22,13 @@ public static class ConcurrentQueueExtension
         return items;
     }
 
+    public static void Enqueue<T>(this ConcurrentQueue<T> q, List<T> itemList)
+    {
+        foreach(T item in itemList)
+        {
+            q.Enqueue(item);
+        }
+    }
+
 
 }

@@ -25,7 +25,7 @@ public class MeshBuilder
 
     #region Main Methods
 
-    public GameObject ExtractChunk(LowPolyTerrain terrain_ref)
+    public GameObject ExtractChunk(LowPolyTerrain2D terrain_ref)
     {
         if (terrain_ref.chunks.ContainsKey(id))
             return null;
@@ -35,7 +35,6 @@ public class MeshBuilder
         chunk.transform.parent = terrain_ref.transform;
         Chunk t = chunk.gameObject.AddComponent<Chunk>();
         terrain_ref.chunks.Add(id, t);
-        t.terrainReference = terrain_ref;
         t.id = id;
         //t.BuildInit(vertices, triangles);
         return chunk;

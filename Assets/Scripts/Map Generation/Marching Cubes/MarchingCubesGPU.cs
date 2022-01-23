@@ -9,16 +9,13 @@ namespace MarchingCubesGPUProject
     {
         public Vector3 offset = Vector3.zero;
         //The size of the voxel array for each dimension
-        const int N = 48;
+        public int N = 16;
 
-        //The size of the buffer that holds the verts.
-        //This is the maximum number of verts that the 
-        //marching cube can produce, 5 triangles for each voxel.
-        const int SIZE = N * N * N * 3 * 5;
+        private int SIZE;
 
         public int m_seed = 0;
 
-        public Material m_drawBuffer;
+        //public Material m_drawBuffer;
 
         public ComputeShader m_perlinNoise;
 
@@ -38,12 +35,34 @@ namespace MarchingCubesGPUProject
 
         private void Start()
         {
-            mesh = new Mesh();
+            //The size of the buffer that holds the verts.
+            //This is the maximum number of verts that the 
+            //marching cube can produce, 5 triangles for each voxel.
+            SIZE = N * N * N * 3 * 5;
             Generate();
+
         }
 
         private void Update()
         {
+            //ClearChunk();
+        }
+
+        private void ClearChunk()
+        {
+            List<GameObject> toDestroy = new List<GameObject>();
+            if (transform.childCount > 0)
+            {
+                for (int i = 0; i < transform.childCount; i++)
+                {
+                    toDestroy.Add(transform.GetChild(i).gameObject);
+                }
+                foreach(GameObject child in toDestroy)
+                {
+                    Destroy(child.GetComponent<MeshFilter>().mesh);                    
+                    Destroy(child);
+                }
+            }
             
         }
 
@@ -95,21 +114,20 @@ namespace MarchingCubesGPUProject
             m_perlinNoise.SetFloat("_X", offset.x);
             m_perlinNoise.SetFloat("_Y", offset.y);
             m_perlinNoise.SetFloat("_Z", offset.z);
-            //m_perlinNoise.SetVector("_Offset", new Vector4(offset.x, offset.y, offset.z, 0));
             m_perlinNoise.SetFloat("_Gain", 0.5f);
             m_perlinNoise.SetTexture(0, "_PermTable2D", perlin.PermutationTable2D);
             m_perlinNoise.SetTexture(0, "_Gradient3D", perlin.Gradient3D);
             m_perlinNoise.SetBuffer(0, "_Result", m_noiseBuffer);
 
             m_perlinNoise.Dispatch(0, N / 8, N / 8, N / 8);
-
+            /*
             //Make the voxel normals.
             m_normals.SetInt("_Width", N);
             m_normals.SetInt("_Height", N);
             m_normals.SetBuffer(0, "_Noise", m_noiseBuffer);
             m_normals.SetTexture(0, "_Result", m_normalsBuffer);
 
-            m_normals.Dispatch(0, N / 8, N / 8, N / 8);
+            m_normals.Dispatch(0, N / 8, N / 8, N / 8);*/
 
             //Make the mesh verts
             m_marchingCubes.SetInt("_Width", N);
@@ -150,7 +168,7 @@ namespace MarchingCubesGPUProject
             m_meshBuffer.Release();
             m_cubeEdgeFlags.Release();
             m_triangleConnectionTable.Release();
-            m_normalsBuffer.Release();
+            //m_normalsBuffer.Release();
         }
 
         struct Vert
@@ -199,27 +217,29 @@ namespace MarchingCubesGPUProject
                     index.Clear();
                 }
             }
+            objects.Add(MakeGameObject(positions, normals, index));
 
             return objects;
         }
 
         GameObject MakeGameObject(List<Vector3> positions, List<Vector3> normals, List<int> index)
         {
-            
+            mesh = new Mesh();
             mesh.vertices = positions.ToArray();
             mesh.normals = normals.ToArray();
             mesh.bounds = new Bounds(new Vector3(0, N / 2, 0), new Vector3(N, N, N));
             mesh.SetTriangles(index.ToArray(), 0);
+            mesh.RecalculateNormals();
 
             GameObject go = new GameObject("Voxel Mesh");
             go.AddComponent<MeshFilter>();
             go.AddComponent<MeshRenderer>();
             go.GetComponent<Renderer>().material = new Material(Shader.Find("Standard"));
             go.GetComponent<MeshFilter>().mesh = mesh;
-            go.isStatic = true;
-
-
+            //go.isStatic = true;
+            go.transform.position = transform.position;
             go.transform.parent = transform;
+
 
             return go;
         }

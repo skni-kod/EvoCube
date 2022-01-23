@@ -8,6 +8,7 @@ public class PerlinAPI : MonoBehaviour
 {
     [SerializeField] public int seed = 0;
     public static GPUPerlinNoise perlin;
+    public static GPUPerlinNoise perlin3D;
     public static Perlin2dSettings p2d;
     [SerializeField] private Perlin2dSettings p2d_to_set;
     public static int N = 8;
@@ -26,6 +27,7 @@ public class PerlinAPI : MonoBehaviour
             Destroy(gameObject);
         }
         ReloadPerlin();
+        ReloadPerlin3D();
     }
     public void ReloadPerlin()
     {
@@ -33,7 +35,11 @@ public class PerlinAPI : MonoBehaviour
         perlin = new GPUPerlinNoise(seed);
         perlin.LoadResourcesFor2DNoise();
     }
-
+    public static void ReloadPerlin3D()
+    {
+        perlin3D = new GPUPerlinNoise(PerlinAPI.instance.seed);
+        perlin3D.LoadResourcesFor3DNoise();
+    }
     #region Main Methods
 
     public static float[] GPUPerlin2D(int size, Vector3 offset)
@@ -43,7 +49,7 @@ public class PerlinAPI : MonoBehaviour
             corrected_size++;
         //float[] map = GPUPerlin2dMAP(offset, corrected_size);
         float[] new_map = new float[size * size];
-        int idx = 0;
+        //int idx = 0;
         for (int y = 0; y < corrected_size; y++)
         {
             for (int x = 0; x < corrected_size; x++)

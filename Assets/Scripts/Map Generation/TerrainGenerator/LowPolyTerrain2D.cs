@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 using ImprovedPerlinNoiseProject;
 using UnityEngine.Rendering;
 
-public class LowPolyTerrain : MonoBehaviour
+public class LowPolyTerrain2D : MonoBehaviour
 {
-    public static LowPolyTerrain instance = null;
+    public static LowPolyTerrain2D instance = null;
     public int chunk_size = 100;
     public Dictionary<Vector3, Chunk> chunks = new Dictionary<Vector3, Chunk>();
     public ObjectPool<PerlinGenerator> perlinGeneratorPool;
@@ -100,16 +100,17 @@ public class LowPolyTerrain : MonoBehaviour
 
     private void SeedGenerators()
     {
-        List<Vector3> chunksIds = FindChunkIdsAroundAPI.FindChunksIdsAroundSquare(PlayerAPI.GetPlayerPosition(), generationRadius);
+        List<Vector3> chunksIds = FindChunkIdsAroundAPI.FindChunksIdsAroundSquare(PlayerAPI.GetPlayerPosition(), generationRadius, chunk_size);
         foreach (Vector3 chunkId in chunksIds)
         {
-            if (chunkId.y == 0)
+            if (chunkId.y == 0 && !chunks.ContainsKey(chunkId))
             {
                 PerlinGenerator perlinGenerator;
                 if (perlinGeneratorPool.GetOne(out perlinGenerator))
                 {
                     perlinGenerator.Generate(chunkId);
                 }
+                break;
             }
 
         }
@@ -134,7 +135,7 @@ public class LowPolyTerrain : MonoBehaviour
             chunk.transform.parent = transform;
             Chunk t = chunk.gameObject.AddComponent<Chunk>();
             chunks.Add(id, t);
-            t.terrainReference = this;
+            //t.terrainReference = this;
             t.BuildInit(id, perlinData);
             return true;
         }
