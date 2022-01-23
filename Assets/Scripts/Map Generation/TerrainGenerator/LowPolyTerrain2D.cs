@@ -100,7 +100,7 @@ public class LowPolyTerrain2D : MonoBehaviour
 
     private void SeedGenerators()
     {
-        List<Vector3> chunksIds = FindChunkIdsAroundAPI.FindChunksIdsAroundSquare(PlayerAPI.GetPlayerPosition(), generationRadius);
+        List<Vector3> chunksIds = FindChunkIdsAroundAPI.FindChunksIdsAroundSquare(PlayerAPI.GetPlayerPosition(), generationRadius, chunk_size);
         foreach (Vector3 chunkId in chunksIds)
         {
             if (chunkId.y == 0 && !chunks.ContainsKey(chunkId))

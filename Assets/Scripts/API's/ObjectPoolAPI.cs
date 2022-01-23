@@ -14,7 +14,7 @@ public interface IPooledObject
     /// </summary>
     public void Init();
     /// <summary>
-    /// All buffers should be included here, or rather all the stuff that needs to be destroyed -> remember memory leaks
+    /// All buffers should be included here, or rather all the stuff that needs to be destroyed -> remember, memory leaks!
     /// </summary>
     public void OnRelease();
     public void Reload();
