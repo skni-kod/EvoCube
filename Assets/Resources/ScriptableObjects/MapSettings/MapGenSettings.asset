@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 39edb791ba759f14ea69a1659b52a099, type: 3}
   m_Name: MapGenSettings
   m_EditorClassIdentifier: 
-  chunkSize: 64
-  squareGenRadius: 5
+  chunkSize: 32
+  squareGenRadius: 1
   frequency: 0.02
   lacunarity: 2
   gain: 0.5

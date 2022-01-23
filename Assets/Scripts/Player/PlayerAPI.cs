@@ -16,6 +16,7 @@ public class PlayerAPI : MonoBehaviour
     }
 
 
+
     public static Vector3 GetPlayerPosition()
     {
         return PlayerAPI.instance.playerObject.transform.position;

@@ -6,16 +6,24 @@ using System.Threading;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-
 public struct Vert
 {
     public Vector4 position;
     public Vector3 normal;
 };
-
+public static class ChunkBuilder
+{ 
+    public static GameObject CreateChunk(Vector3 id, Vert[] data)
+    {
+        GameObject gameObject = new GameObject($"Chunk {id.x}:{id.y}:{id.z}");
+        ChunkCube chunk = gameObject.AddComponent<ChunkCube>();
+        chunk.GenerateMeshesFromData(data);
+        return gameObject;
+    }
+}
 public class ChunksHolder
 {
-    private Dictionary<Vector3, Chunk> chunks = new Dictionary<Vector3, Chunk>();
+    private Dictionary<Vector3, ChunkCube> chunks = new Dictionary<Vector3, ChunkCube>();
     private List<Vector3> ids = new List<Vector3>();
 
     public List<Vector3> GetExistingIds()
@@ -23,14 +31,19 @@ public class ChunksHolder
         return ids;
     }
 
-    public List<Chunk> GetAllChunks()
+    public List<ChunkCube> GetAllChunks()
     {
-        List<Chunk> chunkList = new List<Chunk>();
-        foreach (Chunk chunk in chunks.Values)
+        List<ChunkCube> chunkList = new List<ChunkCube>();
+        foreach (ChunkCube chunk in chunks.Values)
         {
             chunkList.Add(chunk);
         }
         return chunkList;
+    }
+    public void Add(Vector3 id, ChunkCube chunk)
+    {
+        chunks.Add(id, chunk);
+        ids.Add(id);
     }
 
     public void Clear()
@@ -39,7 +52,6 @@ public class ChunksHolder
         ids.Clear();
     }
 }
-
 public class ChunkGenerator : IPooledObject
 {
     #region ComputeBuffers
@@ -55,6 +67,7 @@ public class ChunkGenerator : IPooledObject
     #endregion
     private Vector3 offset = Vector3.zero;
     private RenderTexture m_normalsBuffer;
+    public AsyncGPUReadbackRequest request;
 
     public ChunkGenerator()
     {
@@ -135,6 +148,15 @@ public class ChunkGenerator : IPooledObject
         m_marchingCubes.SetBuffer(0, "_Voxels", m_noiseBuffer);
         m_marchingCubes.SetTexture(0, "_Normals", m_normalsBuffer);
         m_marchingCubes.SetBuffer(0, "_Buffer", m_meshBuffer);
+
+        int chunkVolume = (int)Mathf.Pow(TerrainMap.instance.mapGenSettings.chunkSize, 3);
+        int meshBufferSize = chunkVolume * 5 * 3; // there is 5 triangles each with 3 points
+        //Could also use the ClearMesh compute shader provided.
+        float[] val = new float[meshBufferSize * 7];
+        for (int i = 0; i < meshBufferSize * 7; i++)
+            val[i] = -1.0f;
+
+        m_meshBuffer.SetData(val);
     }
     private void _initializeSettings()
     {
@@ -174,17 +196,28 @@ public class ChunkGenerator : IPooledObject
         DispatchPerlin();
         //DispatchNormals(); <- uncomment for smooth shading, we didnt implemented our own normals calc yet
         DispatchMarchingCubes();
+        request = AsyncGPUReadback.Request(m_meshBuffer);
     }
-    public AsyncGPUReadbackRequest GetGeneratedData()
+    private void _returnSelfIntoPool()
     {
-        //Get the data out of the buffer.
-        //int chunkVolume = (int)Mathf.Pow(mapGenSettings.chunk_size, 3);
-        //int meshBufferSize = chunkVolume * 5 * 3; // there is 5 triangles each with 3 points
-
-        //Vert[] verts = new Vert[meshBufferSize];
-        //m_meshBuffer.GetData(verts);
-        return AsyncGPUReadback.Request(m_meshBuffer);
-        //return verts;
+        TerrainMap.instance.ReturnChunkGeneratorIntoPool(this);
+    }
+    public IEnumerator GetGeneratedData()
+    {
+        while(true)
+        {
+            if (request.done)
+            {
+                if (!request.hasError)
+                {
+                    ChunkBuilder.CreateChunk(offset, request.GetData<Vert>().ToArray());
+                    //TerrainMap.instance.AddChunk();
+                    //_returnSelfIntoPool();
+                    break;
+                }
+            }
+            yield return new WaitForSeconds(.0001f);
+        }
     }
     public void OnRelease()
     {
@@ -198,7 +231,6 @@ public class ChunkGenerator : IPooledObject
         _initializeSettings();
     }
 }
-
 public class MapChunkFinder
 {
     private ConcurrentQueue<Vector3> idsToGenerate = new ConcurrentQueue<Vector3>();
@@ -231,31 +263,14 @@ public class MapChunkFinder
         return idsToGenerate.TryDequeue(out _id);
     }
 }
-
-public class ChunkBuilder
-{
-    public ChunkBuilder()
-    {
-
-    }
-
-    public void InitializeGeneration()
-    {
-
-    }
-
-}
-
 public class TerrainMap : MonoBehaviour
 {
     public static TerrainMap instance;
+    public GameObject chunkMeshPrefab;
     public MapGenSettings mapGenSettings;
     private ChunksHolder chunks = new ChunksHolder();
-    private ChunkBuilder chunkBuilder = new ChunkBuilder();
     private ObjectPool<ChunkGenerator> chunkGenerators;
     private MapChunkFinder mapChunkFinder = new MapChunkFinder();
-    private ConcurrentQueue<ChunkGenerator> chunksGenerating = new ConcurrentQueue<ChunkGenerator>();
-    List<AsyncGPUReadbackRequest> chunkGeneratorsRequests = new List<AsyncGPUReadbackRequest>();
     public int chunkGeneratorPoolSize = 5;
 
     void Awake()
@@ -271,56 +286,31 @@ public class TerrainMap : MonoBehaviour
         PerlinAPI.instance.seed = mapGenSettings.seed;
         PerlinAPI.ReloadPerlin3D();
         PreparePools();
-        //StartThreads();
-        GenerationPipeline();
+        StartThreads();
     }
     void Update()
     {
-        GenThread();
+        GenerationPipeline();
     }
     private void StartThreads()
     {
-        Thread threadGen = new Thread(() => GenThread());
-        threadGen.Start();
-    }
-    private void GenThread()
-    {
-        //1.check if new seeded generator is in the queue
-        ChunkGenerator chunkGenerator;
-        while (chunksGenerating.TryDequeue(out chunkGenerator))
-        {
-            chunkGeneratorsRequests.Add(chunkGenerator.GetGeneratedData());
-        }
-        foreach(AsyncGPUReadbackRequest req in chunkGeneratorsRequests)
-        {
-            if(req.done)
-            { 
-                if (!req.hasError)
-                    req.GetData<Vert>().ToArray();
-                chunkGeneratorsRequests.Remove(req);
-                break;
-            }
-        }
-    }
-    private void CreateChunkFromData(AsyncGPUReadbackRequest request)
-    {
-        Debug.Log(request.done);
+        //Thread threadGen = new Thread(() => GenThread());
+        //threadGen.Start();
     }
     private void GenerationPipeline()
     {
         //1.find chunks to generate
         mapChunkFinder.FindChunksAround();
-
         //2.seed generators
         ChunkGenerator chunkGenerator;
-        while(chunkGenerators.GetOne(out chunkGenerator))
+        while (chunkGenerators.GetOne(out chunkGenerator))
         {
             Vector3 chunkId;
             if (mapChunkFinder.GetOneIdToGenerate(out chunkId))
             {
                 chunkGenerator.SetOffset(chunkId);
                 chunkGenerator.StartGeneration();
-                chunksGenerating.Enqueue(chunkGenerator);
+                StartCoroutine(chunkGenerator.GetGeneratedData());
             }
             else
             {
@@ -328,10 +318,7 @@ public class TerrainMap : MonoBehaviour
                 break;
             }
         }
-
-
     }
-
     private void OnDestroy()
     {
         ClearPools();
@@ -343,7 +330,7 @@ public class TerrainMap : MonoBehaviour
     }
     public void DestroyEveryChunk()
     {
-        foreach (Chunk chunk in chunks.GetAllChunks())
+        foreach (ChunkCube chunk in chunks.GetAllChunks())
         {
             Destroy(chunk);
         }
@@ -356,5 +343,22 @@ public class TerrainMap : MonoBehaviour
     public List<Vector3> GetExistingIds()
     {
         return chunks.GetExistingIds();
+    }
+    public void ReturnChunkGeneratorIntoPool(ChunkGenerator chunkGenerator)
+    {
+        chunkGenerators.ReturnIntoPool(chunkGenerator);
+    }
+    public void AddChunk(GameObject chunk)
+    {
+        ChunkCube chunkCube = chunk.GetComponent<ChunkCube>();
+        if (!chunks.GetExistingIds().Contains(chunkCube.id))
+        {
+            chunk.transform.parent = transform;
+            chunks.Add(chunkCube.id, chunkCube);
+        }
+        else
+        {
+            Destroy(chunk);
+        }
     }
 }
