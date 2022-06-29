@@ -7,7 +7,7 @@ using UnityEngine;
 
 [ExecuteInEditMode]
 [RequireComponent(typeof(MeshFilter))]
-public class MeshCreatorTest : MonoBehaviour
+public class MeshCreator : MonoBehaviour
 {
     public MeshFilter meshFilter;
     public int size;
