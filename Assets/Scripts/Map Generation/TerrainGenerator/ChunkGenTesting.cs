@@ -11,10 +11,12 @@ public class ChunkGenTesting : MonoBehaviour
     [SerializeField] public float offsetX;
     [SerializeField] public float offsetY;
 
+    private IMeshCreatingService meshCreatingService;
+
     void Update()
     {
-        meshFilter.mesh.vertices = MeshAPI.CreateVerticesFlat(size + 1, 1, PerlinAPI.GPUPerlin2D(size + 1, new Vector2(offsetX, offsetY)));
-        meshFilter.mesh.triangles = MeshAPI.CalculateTrianglesFlat(size);
+        meshFilter.mesh.vertices = meshCreatingService.CreateVerticesFlat(size + 1, 1, PerlinAPI.GPUPerlin2D(size + 1, new Vector2(offsetX, offsetY)));
+        meshFilter.mesh.triangles = meshCreatingService.CalculateTrianglesFlat(size);
         meshFilter.mesh.RecalculateNormals();
         offsetX += terrainReference.scrollingSpeed.x;
         offsetY += terrainReference.scrollingSpeed.y;

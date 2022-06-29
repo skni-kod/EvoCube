@@ -4,7 +4,7 @@ using UnityEditor;
 
 public class MakeScriptableObject
 {
-    [MenuItem("Assets/Create/Perlin2dSettings")]
+    /*[MenuItem("Assets/Create/Perlin2dSettings")]
     public static void CreateMyAsset()
     {
         Perlin2dSettings asset = ScriptableObject.CreateInstance<Perlin2dSettings>();
@@ -30,5 +30,5 @@ public class MakeScriptableObject
         Selection.activeObject = asset;
     }
 
-
+    */
 }
