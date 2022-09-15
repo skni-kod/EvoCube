@@ -33,7 +33,7 @@ public class MeshBuilder
         GameObject chunk = new GameObject();
         chunk.transform.position = new Vector3(id.x * chunk_size, id.y * chunk_size, id.z * chunk_size);
         chunk.transform.parent = terrain_ref.transform;
-        Chunk t = chunk.gameObject.AddComponent<Chunk>();
+        ChunkOld t = chunk.gameObject.AddComponent<ChunkOld>();
         terrain_ref.chunks.Add(id, t);
         t.id = id;
         //t.BuildInit(vertices, triangles);

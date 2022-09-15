@@ -26,7 +26,6 @@ public class PerlinGenerator : IPooledObject
     public void Reload()
     {
         Init();
-        //ReloadSettings();
     }
 
     public void Init()
@@ -72,7 +71,7 @@ public class PerlinGenerator : IPooledObject
             GameObject chunk = new GameObject();
             chunk.transform.position = new Vector3(chunkId.x * LowPolyTerrain2D.instance.chunk_size, chunkId.y * LowPolyTerrain2D.instance.chunk_size, chunkId.z * LowPolyTerrain2D.instance.chunk_size);
             chunk.transform.parent = LowPolyTerrain2D.instance.transform;
-            Chunk t = chunk.gameObject.AddComponent<Chunk>();
+            ChunkOld t = chunk.gameObject.AddComponent<ChunkOld>();
             LowPolyTerrain2D.instance.chunks.Add(chunkId, t);
             //t.terrainReference = LowPolyTerrain.instance; //do sprawdzenia
             t.BuildInit(chunkId, request.GetData<Vector3>().ToArray());
