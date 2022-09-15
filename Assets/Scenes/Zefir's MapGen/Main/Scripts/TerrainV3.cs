@@ -1,37 +1,33 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 
-public class TerrainSubscriber : MonoBehaviour
-{
 
-}
 
-public class ChunkV3 : MonoBehaviour, IChunk
-{
 
-}
 
 public class TerrainV3 : MonoBehaviour, ITerrain
 {
-    [Inject][SerializeField] IUiDirector uiDirector;
-    private List<TerrainSubscriber> terrainSubscribers = new List<TerrainSubscriber>();
-    private int chunkSize = 64;
-    
+    [Inject] ChunkA.Factory _chunkFactory;
+    [Inject] IUiDirector uiDirector;
+    int chunkSize = 64;
+
+    public void Start()
+    {
+        Initialize();
+    }
 
     public void Initialize()
     {
         chunkSize = 64;
         spawnChunk();
+        var b = new GameObject();
+        _chunkFactory.Create(b);
     }
 
-    private void spawnChunk()
+    void spawnChunk()
     {
-        GameObject chunk = new GameObject();
-        transform.Adopt(chunk);
-        
+
+        //transform.Adopt(chunk);
     }
-
-
 }
