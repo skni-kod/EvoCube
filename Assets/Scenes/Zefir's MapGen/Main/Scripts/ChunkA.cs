@@ -15,6 +15,8 @@ public class ChunkA : MonoBehaviour, IChunk
 
         public ChunkA Create(GameObject gameObject)
         {
+            gameObject.AddComponent(typeof(Mesh));
+            gameObject.AddComponent(typeof(Mesh));
             return _container.InstantiateComponent<ChunkA>(gameObject);
         }
     }
