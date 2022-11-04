@@ -17,7 +17,7 @@ RenderSettings:
   m_Fog: 1
   m_FogColor: {r: 0.24528301, g: 0.24528301, b: 0.24528301, a: 1}
   m_FogMode: 3
-  m_FogDensity: 0.0017
+  m_FogDensity: 0.004
   m_LinearFogStart: 200
   m_LinearFogEnd: 400
   m_AmbientSkyColor: {r: 0.212, g: 0.227, b: 0.259, a: 1}
@@ -542,7 +542,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerObject: {fileID: 898380769}
-  playerPosition: {x: 0, y: 0, z: 0}
 --- !u!1 &1267321857
 GameObject:
   m_ObjectHideFlags: 0

@@ -12,7 +12,7 @@ public class LowPolyTerrain2D : MonoBehaviour
 {
     public static LowPolyTerrain2D instance = null;
     public int chunk_size = 100;
-    public Dictionary<Vector3, Chunk> chunks = new Dictionary<Vector3, Chunk>();
+    public Dictionary<Vector3, ChunkOld> chunks = new Dictionary<Vector3, ChunkOld>();
     public ObjectPool<PerlinGenerator> perlinGeneratorPool;
     public int seed = 0;
     public bool rebuildOnSeedChange = false;
@@ -77,7 +77,7 @@ public class LowPolyTerrain2D : MonoBehaviour
 
     public void DestroyEveryChunk()
     {
-        foreach (Chunk chunk in chunks.Values)
+        foreach (ChunkOld chunk in chunks.Values)
         {
             Destroy(chunk);
         }
@@ -133,7 +133,7 @@ public class LowPolyTerrain2D : MonoBehaviour
             GameObject chunk = new GameObject();
             chunk.transform.position = new Vector3(id.x * chunk_size, id.y * chunk_size, id.z * chunk_size);
             chunk.transform.parent = transform;
-            Chunk t = chunk.gameObject.AddComponent<Chunk>();
+            ChunkOld t = chunk.gameObject.AddComponent<ChunkOld>();
             chunks.Add(id, t);
             //t.terrainReference = this;
             t.BuildInit(id, perlinData);
