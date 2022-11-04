@@ -9,14 +9,16 @@ public class MeshTopologyWorker : MonoBehaviour
 {
     public ComputeShader m_perlinNoise;
     private ComputeBuffer m_noiseBuffer;
+    private int chunksize = 64;
+    public ChunkA chunk;
     private static int N = 8;
     public Vector3 chunkId = new Vector3(0, 0, 0);
 
     public void Init()
     {
         m_perlinNoise = UnityEngine.Object.Instantiate(Resources.Load<ComputeShader>("Shaders/ComputeShaders/ImprovedPerlinNoise2D"));
-        m_noiseBuffer = new ComputeBuffer((LowPolyTerrain2D.instance.chunk_size + N) * (LowPolyTerrain2D.instance.chunk_size + N) * 6, sizeof(float) * 3);
-        m_perlinNoise.SetInt("_Width", LowPolyTerrain2D.instance.chunk_size + N);
+        m_noiseBuffer = new ComputeBuffer((chunksize + N) * (chunksize + N) * 6, sizeof(float) * 3);
+        m_perlinNoise.SetInt("_Width", chunksize + N);
         m_perlinNoise.SetTexture(PerlinAPI.p2d.type, "_PermTable1D", PerlinAPI.perlin.PermutationTable1D);
         m_perlinNoise.SetTexture(PerlinAPI.p2d.type, "_Gradient2D", PerlinAPI.perlin.Gradient2D);
         m_perlinNoise.SetBuffer(PerlinAPI.p2d.type, "_Result", m_noiseBuffer);
@@ -35,33 +37,17 @@ public class MeshTopologyWorker : MonoBehaviour
     public void Generate(Vector3 offset)
     {
         chunkId = offset;
-        m_perlinNoise.SetFloat("_X", offset.x * LowPolyTerrain2D.instance.chunk_size);
-        m_perlinNoise.SetFloat("_Y", offset.y * LowPolyTerrain2D.instance.chunk_size);
-        m_perlinNoise.SetFloat("_Z", offset.z * LowPolyTerrain2D.instance.chunk_size);
-        m_perlinNoise.Dispatch(PerlinAPI.p2d.type, (LowPolyTerrain2D.instance.chunk_size + N) / N, (LowPolyTerrain2D.instance.chunk_size + N) / N, 1);
+        m_perlinNoise.SetFloat("_X", offset.x * chunksize);
+        m_perlinNoise.SetFloat("_Y", offset.y * chunksize);
+        m_perlinNoise.SetFloat("_Z", offset.z * chunksize);
+        m_perlinNoise.Dispatch(PerlinAPI.p2d.type, (chunksize + N) / N, (chunksize + N) / N, 1);
         AsyncGPUReadback.Request(m_noiseBuffer, GetNoiseDataCallback);
         //AsyncGPUReadback.WaitAllRequests();
     }
 
     public void GetNoiseDataCallback(AsyncGPUReadbackRequest request)
     {
-        Vector3[] data = request.GetData<Vector3>().ToArray();
-    }
-
-    public class Pool : MonoMemoryPool<MeshTopologyWorker>
-    {
-        protected override void OnCreated(MeshTopologyWorker worker)
-        {
-            worker.Init();
-        }
-        protected override void OnDestroyed(MeshTopologyWorker worker)
-        {
-            worker.m_noiseBuffer.Release(); ;
-        }
-        protected override void Reinitialize(MeshTopologyWorker worker)
-        {
-
-        }
+        chunk.BuildMesh(request.GetData<Vector3>().ToArray());
     }
 
 }
