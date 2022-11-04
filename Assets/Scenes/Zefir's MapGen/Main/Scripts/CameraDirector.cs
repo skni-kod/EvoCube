@@ -14,9 +14,10 @@ public class CameraDirector : MonoBehaviour, ICameraDirector
 
     private void createMainCamera()
     {
-        //GameObject cameraObj = Instantiate(cameraPrefab);
-        //cameraObj.transform.SetParent(transform);
-        //camera = cameraObj.GetComponent<Camera>();
+        GameObject cameraObj = new GameObject("Camera");
+        cameraObj.transform.parent = transform;
+        cameraObj.AddComponent<Camera>();
+        cameraObj.AddComponent<AudioListener>();
     }
 
     [Inject]

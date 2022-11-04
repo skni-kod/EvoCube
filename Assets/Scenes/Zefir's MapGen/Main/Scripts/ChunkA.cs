@@ -5,6 +5,25 @@ using Zenject;
 
 public class ChunkA : MonoBehaviour, IChunk
 {
+    private MeshFilter meshFilter;
+    private MeshRenderer meshRenderer;
+
+    public void SetMesh(Mesh mesh)
+    {
+        if (meshFilter != null)
+        {
+            RemoveMesh();
+            meshFilter.sharedMesh = mesh;
+        }
+    }
+
+    public Mesh RemoveMesh()
+    {
+        Mesh meshObj = meshFilter.sharedMesh;
+        meshFilter.sharedMesh = null;
+        return meshObj;
+    }
+
     public class Factory : PlaceholderFactory<GameObject, ChunkA>
     {
     }
@@ -15,9 +34,13 @@ public class ChunkA : MonoBehaviour, IChunk
 
         public ChunkA Create(GameObject gameObject)
         {
-            gameObject.AddComponent(typeof(Mesh));
-            gameObject.AddComponent(typeof(Mesh));
-            return _container.InstantiateComponent<ChunkA>(gameObject);
+            ChunkA chunk = _container.InstantiateComponent<ChunkA>(gameObject);
+            chunk.meshFilter = (MeshFilter)gameObject.AddComponent(typeof(MeshFilter));
+            chunk.meshRenderer = (MeshRenderer)gameObject.AddComponent(typeof(MeshRenderer));
+
+
+
+            return chunk;
         }
     }
 }
