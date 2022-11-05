@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
+using TRM = TerrainResourceManager;
 
 
 
@@ -10,7 +11,16 @@ public class TerrainV3 : MonoBehaviour, ITerrain
 {
     [Inject] readonly ChunkA.Factory _chunkFactory;
     [Inject] readonly IUiDirector uiDirector;
-    int chunkSize = 64;
+    [Inject] readonly TRM.TopologyWorker.Pool _topologyWorkerPool;
+
+
+
+    /*public void RemoveFoo()
+    {
+        var foo = _topologyWorkers[0];
+        _topologyWorkerPool.Despawn(foo);
+        _topologyWorkers.Remove(foo);
+    }*/
 
     public void Start()
     {
@@ -19,14 +29,16 @@ public class TerrainV3 : MonoBehaviour, ITerrain
 
     public void Initialize()
     {
-        chunkSize = 64;
-        spawnChunk();
+        spawnChunk(new Vector3(0, 0, 0));
     }
 
-    void spawnChunk()
+    void spawnChunk(Vector3 id)
     {
-        var chunk = new GameObject("Chunk");
-        _chunkFactory.Create(chunk);
-        transform.Adopt(chunk);
+        var chunkObject = new GameObject("Chunk");
+        var chunk = _chunkFactory.Create(chunkObject);
+        transform.Adopt(chunkObject);
+        TRM.TopologyWorker worker = _topologyWorkerPool.Spawn();
+        worker.Init();
+        worker.Generate(id, chunk.BuildMeshCallback);
     }
 }

@@ -16,7 +16,7 @@ public class GameplayInstaller : MonoInstaller
         .AsSingle().NonLazy();
 
 
-
+        Container.BindMemoryPool<TerrainResourceManager.TopologyWorker, TerrainResourceManager.TopologyWorker.Pool>().WithInitialSize(10);
 
 
     }
