@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
-using TRM = TerrainResourceManager;
+
 
 namespace EvoCube.MapGeneration
 {
@@ -9,7 +9,7 @@ namespace EvoCube.MapGeneration
     {
         [Inject] readonly Chunk.Factory _chunkFactory;
         [Inject] readonly IUiDirector uiDirector;
-        [Inject] readonly TRM.TopologyWorker.Pool _topologyWorkerPool;
+        [Inject] readonly TerrainResourceManager.TopologyWorker.Pool _topologyWorkerPool;
 
         public void Start()
         {
@@ -26,7 +26,7 @@ namespace EvoCube.MapGeneration
             var chunkObject = new GameObject("Chunk");
             var chunk = _chunkFactory.Create(chunkObject);
             transform.Adopt(chunkObject);
-            TRM.TopologyWorker worker = _topologyWorkerPool.Spawn();
+            TerrainResourceManager.TopologyWorker worker = _topologyWorkerPool.Spawn();
             worker.Init();
             worker.Generate(id, chunk.BuildMeshCallback);
         }

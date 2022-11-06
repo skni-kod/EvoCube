@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 using Zenject;
-using TRM = TerrainResourceManager;
-
 
 namespace EvoCube.MapGeneration
 {
@@ -60,7 +58,7 @@ namespace EvoCube.MapGeneration
         public class ChunkFactory : IFactory<GameObject, Chunk>
         {
             [Inject] readonly DiContainer _container;
-            [Inject] readonly TRM.TopologyWorker.Pool _topologyWorkerPool;
+            [Inject] readonly TerrainResourceManager.TopologyWorker.Pool _topologyWorkerPool;
 
             public Chunk Create(GameObject gameObject)
             {

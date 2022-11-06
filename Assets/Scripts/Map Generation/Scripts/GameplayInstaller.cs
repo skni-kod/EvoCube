@@ -6,23 +6,28 @@ using EvoCube.MapGeneration;
 
 public class GameplayInstaller : MonoInstaller
 {
-    public override void InstallBindings()
+    public static void Install(DiContainer container)
     {
-        Container.BindFactory<GameObject, Chunk, Chunk.Factory>().FromFactory<Chunk.ChunkFactory>();
+        container.BindFactory<GameObject, Chunk, Chunk.Factory>().FromFactory<Chunk.ChunkFactory>();
 
-        Container.BindInterfacesAndSelfTo<PerlinAPI>()
+        container.BindInterfacesAndSelfTo<EvoCube.MapGeneration.PerlinAPI>()
         .FromNewComponentOnNewGameObject()
         .WithGameObjectName("PerlinAPI")
         .AsSingle().NonLazy();
 
-        Container.BindInterfacesAndSelfTo<TerrainV3>()
+        container.BindInterfacesAndSelfTo<TerrainV3>()
         .FromNewComponentOnNewGameObject()
         .WithGameObjectName("Terrain")
         .AsSingle().NonLazy();
 
 
-        Container.BindMemoryPool<TerrainResourceManager.TopologyWorker, TerrainResourceManager.TopologyWorker.Pool>().WithInitialSize(10);
+        container.BindMemoryPool<TerrainResourceManager.TopologyWorker, TerrainResourceManager.TopologyWorker.Pool>().WithInitialSize(10);
 
+    }
 
+    public override void InstallBindings()
+    {
+
+        Install(Container);
     }
 }
