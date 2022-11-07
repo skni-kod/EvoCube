@@ -9,7 +9,7 @@ namespace EvoCube.MapGeneration
     {
         [Inject] readonly Chunk.Factory _chunkFactory;
         [Inject] readonly IUiDirector uiDirector;
-        [Inject] readonly TerrainResourceManager.TopologyWorker.Pool _topologyWorkerPool;
+        [Inject] readonly TopologyWorker.Pool _topologyWorkerPool;
 
         public void Start()
         {
@@ -19,15 +19,19 @@ namespace EvoCube.MapGeneration
         public void Initialize()
         {
             spawnChunk(new Vector3(0, 0, 0));
+            spawnChunk(new Vector3(1, 0, 0));
+            spawnChunk(new Vector3(0, 0, 1));
+            spawnChunk(new Vector3(1, 0, 1));
         }
 
         void spawnChunk(Vector3 id)
         {
-            var chunkObject = new GameObject("Chunk");
+            var chunkObject = new GameObject("Chunk" + id.ToString());
             var chunk = _chunkFactory.Create(chunkObject);
             transform.Adopt(chunkObject);
-            TerrainResourceManager.TopologyWorker worker = _topologyWorkerPool.Spawn();
-            worker.Init();
+            chunkObject.transform.position = id * TerrainConfig.chunkSize;
+            TopologyWorker worker = _topologyWorkerPool.Spawn();
+            //worker.Init();
             worker.Generate(id, chunk.BuildMeshCallback);
         }
     }

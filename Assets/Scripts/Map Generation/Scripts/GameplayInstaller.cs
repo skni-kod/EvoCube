@@ -21,7 +21,7 @@ public class GameplayInstaller : MonoInstaller
         .AsSingle().NonLazy();
 
 
-        container.BindMemoryPool<TerrainResourceManager.TopologyWorker, TerrainResourceManager.TopologyWorker.Pool>().WithInitialSize(10);
+        container.BindMemoryPool<TopologyWorker, TopologyWorker.Pool>().WithInitialSize(10).FromNewComponentOnNewGameObject().UnderTransformGroup("Topology Workers");
 
     }
 

@@ -16,7 +16,7 @@ namespace EvoCube.MapGeneration
         public Chunk chunk;
         private static int N = 8;
         public Vector3 chunkId = new Vector3(0, 0, 0);
-
+        /*
         public void Init()
         {
             m_perlinNoise = UnityEngine.Object.Instantiate(Resources.Load<ComputeShader>("Shaders/ComputeShaders/ImprovedPerlinNoise2D"));
@@ -47,7 +47,7 @@ namespace EvoCube.MapGeneration
             AsyncGPUReadback.Request(m_noiseBuffer, GetNoiseDataCallback);
             //AsyncGPUReadback.WaitAllRequests();
         }
-
+        */
         public void GetNoiseDataCallback(AsyncGPUReadbackRequest request)
         {
             chunk.BuildMesh(request.GetData<Vector3>().ToArray());

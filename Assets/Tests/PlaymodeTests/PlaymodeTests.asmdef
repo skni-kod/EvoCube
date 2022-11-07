@@ -6,8 +6,7 @@
         "UnityEditor.TestRunner",
         "Main",
         "Zenject-TestFramework",
-        "Zenject",
-        "Zenject-IntegrationTests"
+        "Zenject"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

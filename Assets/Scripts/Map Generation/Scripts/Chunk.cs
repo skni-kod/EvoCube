@@ -8,8 +8,9 @@ namespace EvoCube.MapGeneration
 {
     public class Chunk : MonoBehaviour, IChunk
     {
-        private MeshFilter meshFilter;
-        private MeshRenderer meshRenderer;
+        private MeshFilter _meshFilter;
+        private MeshRenderer _meshRenderer;
+        public Vector3 Id { get; set; }
 
         public void BuildMesh(Vector3[] perlinData)
         {
@@ -19,6 +20,7 @@ namespace EvoCube.MapGeneration
             mesh.RecalculateNormals();
             SetMesh(mesh);
         }
+
 
         public void BuildMeshCallback(AsyncGPUReadbackRequest request)
         {
@@ -31,23 +33,23 @@ namespace EvoCube.MapGeneration
 
         public Mesh GetMesh()
         {
-            return meshFilter.sharedMesh;
+            return _meshFilter.sharedMesh;
         }
 
         public void SetMesh(Mesh mesh)
         {
-            if (meshFilter != null)
+            if (_meshFilter != null)
             {
                 RemoveMesh();
                 mesh.name = "ChunkMesh";
-                meshFilter.sharedMesh = mesh;
+                _meshFilter.sharedMesh = mesh;
             }
         }
 
         public void RemoveMesh()
         {
-            Mesh meshObj = meshFilter.sharedMesh;
-            meshFilter.sharedMesh = null;
+            Mesh meshObj = _meshFilter.sharedMesh;
+            _meshFilter.sharedMesh = null;
             Destroy(meshObj);
         }
 
@@ -58,15 +60,15 @@ namespace EvoCube.MapGeneration
         public class ChunkFactory : IFactory<GameObject, Chunk>
         {
             [Inject] readonly DiContainer _container;
-            [Inject] readonly TerrainResourceManager.TopologyWorker.Pool _topologyWorkerPool;
+            [Inject] readonly TopologyWorker.Pool _topologyWorkerPool;
 
             public Chunk Create(GameObject gameObject)
             {
                 //ChunkA chunk = _container.InstantiateComponentOnNewGameObject<ChunkA>("Chunk");
                 Chunk chunk = _container.InstantiateComponent<Chunk>(gameObject);
-                chunk.meshFilter = (MeshFilter)gameObject.AddComponent(typeof(MeshFilter));
-                chunk.meshRenderer = (MeshRenderer)gameObject.AddComponent(typeof(MeshRenderer));
-                chunk.meshRenderer.material = MaterialsAPI.GetMaterialByName("sand");
+                chunk._meshFilter = (MeshFilter)gameObject.AddComponent(typeof(MeshFilter));
+                chunk._meshRenderer = (MeshRenderer)gameObject.AddComponent(typeof(MeshRenderer));
+                chunk._meshRenderer.material = MaterialsAPI.GetMaterialByName("sand");
 
                 return chunk;
             }

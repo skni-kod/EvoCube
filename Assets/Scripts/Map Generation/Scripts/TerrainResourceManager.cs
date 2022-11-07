@@ -9,7 +9,7 @@ namespace EvoCube.MapGeneration
 {
     public class TerrainResourceManager : MonoBehaviour
     {
-        public class TopologyWorker
+        /*public class TopologyWorker1
         {
             public ComputeShader m_perlinNoise;
             private ComputeBuffer m_noiseBuffer;
@@ -47,6 +47,6 @@ namespace EvoCube.MapGeneration
             {
             }
         }
-
+        */
     }
 }

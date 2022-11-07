@@ -3,26 +3,23 @@ using System.Collections;
 using UnityEngine.TestTools;
 using NUnit.Framework;
 
-public class UntitledIntegrationTest : ZenjectIntegrationTestFixture
+public class MeshGenerationTests : ZenjectIntegrationTestFixture
 {
     [UnityTest]
-    public IEnumerator RunTest1()
+    public IEnumerator InitialisationTest()
     {
         // Setup initial state by creating game objects from scratch, loading prefabs/scenes, etc
-
         PreInstall();
-
         GameplayInstaller.Install(Container);
         // Call Container.Bind methods
-
         PostInstall();
-
-        Assert.IsTrue(EvoCube.MapGeneration.PerlinAPI.initialised);
-
-
-
+        EvoCube.MapGeneration.PerlinAPI _perlinApi = Container.Resolve<EvoCube.MapGeneration.PerlinAPI>();
+        Assert.IsTrue(_perlinApi.initialised);
         // Add test assertions for expected state
         // Using Container.Resolve or [Inject] fields
         yield break;
     }
+
+
+
 }

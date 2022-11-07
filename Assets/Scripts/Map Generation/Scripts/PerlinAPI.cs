@@ -2,17 +2,19 @@ using ImprovedPerlinNoiseProject;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Zenject;
 
 namespace EvoCube.MapGeneration
 {
     public class PerlinAPI : MonoBehaviour
     {
-        public static GPUPerlinNoise perlin;
-        public static GPUPerlinNoise perlin3D;
-        public static Perlin2dSettings p2d;
-        public static bool initialised = false;
+        public GPUPerlinNoise perlin;
+        public GPUPerlinNoise perlin3D;
+        public Perlin2dSettings p2d;
+        public bool initialised = false;
 
-        private void Awake()
+
+        [Inject]public void Construct()
         {
             p2d = ScriptableObject.CreateInstance<Perlin2dSettings>();
             initialised = true;
@@ -24,12 +26,12 @@ namespace EvoCube.MapGeneration
             perlin = new GPUPerlinNoise(TerrainConfig.seed);
             perlin.LoadResourcesFor2DNoise();
         }
-        public static void ReloadPerlin3D()
+        public void ReloadPerlin3D()
         {
             perlin3D = new GPUPerlinNoise(TerrainConfig.seed);
             perlin3D.LoadResourcesFor3DNoise();
         }
-        public static float[] GPUPerlin2D(int size, Vector3 offset)
+        public float[] GPUPerlin2D(int size, Vector3 offset)
         {
             int corrected_size = size;
             while (corrected_size % TerrainConfig.kernelNumber != 0)
