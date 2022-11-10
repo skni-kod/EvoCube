@@ -9,7 +9,7 @@ public class Playermovment : MonoBehaviour
     public IMovment ruch;
     
     public int speed;
-    public float mouseSensitvity = 100f;
+    public float mouseSensitvity = 150f;
     [SerializeField]
     private Camera camerka;
     private float xRotation=0f;
@@ -29,11 +29,14 @@ public class Playermovment : MonoBehaviour
     void Start()
     {
                 FindObjectOfType<Camera>().gameObject.transform.parent.parent = transform;
+        FindObjectOfType<Camera>().gameObject.transform.parent.localPosition = Vector3.zero;
         camerka = FindObjectOfType<Camera>();
         speed = ruch.speed;
 
         //dodanie rigibody i box colider
-        BoxCollider bc = gameObject.AddComponent(typeof(BoxCollider)) as BoxCollider;
+     //   BoxCollider bc = gameObject.AddComponent(typeof(BoxCollider)) as BoxCollider;
+       CapsuleCollider Cp= gameObject.AddComponent(typeof(CapsuleCollider)) as CapsuleCollider;
+        
         rb = gameObject.AddComponent(typeof(Rigidbody)) as Rigidbody;
         transform.position = new Vector3(0, 200f, 0);
         rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
@@ -66,7 +69,7 @@ public class Playermovment : MonoBehaviour
         xRotation -= mouseY;
         yRotation += mouseX;
         xRotation = Mathf.Clamp(xRotation, -70f, 90f);
-        gameObject.transform.localRotation = Quaternion.Euler(xRotation, yRotation, 0f);
+        camerka.transform.localRotation = Quaternion.Euler(xRotation, yRotation, 0f);
 
 
         //wziecie camery z cameradirectordirector
@@ -90,7 +93,7 @@ public class Playermovment : MonoBehaviour
     }
     private void Ruch()
     {
-        ruch.moveDirection = transform.forward * ruch.verticalInput+transform.right*ruch.horizontalInput;
+        ruch.moveDirection = camerka.transform.forward * ruch.verticalInput+camerka.transform.right*ruch.horizontalInput;
         if (grounded)//on ground
         {
             rb.AddForce(ruch.moveDirection.normalized * speed * 10f, ForceMode.Force);

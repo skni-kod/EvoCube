@@ -860,6 +860,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 368e4f6dc9c75954abd343e4bf1ff994, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  wygladGraczaPrefab: {fileID: 6460580133603224596, guid: c0635fb6ee2d3e146a6e7404fa3e6866,
+    type: 3}
 --- !u!1 &973687776
 GameObject:
   m_ObjectHideFlags: 0
