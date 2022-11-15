@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
-
+using Cinemachine;
 public class Playermovment : MonoBehaviour
 {
     [Inject]
@@ -12,6 +12,8 @@ public class Playermovment : MonoBehaviour
     public float mouseSensitvity = 150f;
     [SerializeField]
     private Camera camerka;
+    private Camera camerka3Person;
+
     private float xRotation=0f;
 
     private float yRotation = 0f;
@@ -25,10 +27,14 @@ public class Playermovment : MonoBehaviour
     public float jumpCooldown;
     public float airMultiplier;
     bool readyToJump;
+    bool watchingIn3Person;
     // Start is called before the first frame update
     void Start()
     {
-                FindObjectOfType<Camera>().gameObject.transform.parent.parent = transform;
+        FindObjectOfType<CinemachineFreeLook>().Follow = transform;
+        FindObjectOfType<CinemachineFreeLook>().LookAt = transform;
+        camerka3Person = FindObjectOfType<CinemachineBrain>().GetComponent<Camera>();
+              FindObjectOfType<Camera>().gameObject.transform.parent.parent = transform;
         FindObjectOfType<Camera>().gameObject.transform.parent.localPosition = Vector3.zero;
         camerka = FindObjectOfType<Camera>();
         speed = ruch.speed;
@@ -61,8 +67,19 @@ public class Playermovment : MonoBehaviour
     {
         ruch.speed = speed;
         ruch.speedObrotu = speed;
-    
-        // obrot kamera
+        //zmiana widoku
+        if(watchingIn3Person)
+        { camerka3Person.gameObject.SetActive(true); camerka.gameObject.SetActive(false); }
+        else
+        {
+            camerka3Person.gameObject.SetActive(false);
+            camerka.gameObject.SetActive(true);
+        }
+        if(Input.GetKeyDown(KeyCode.F1))
+        {
+            watchingIn3Person = !watchingIn3Person;
+        }
+        // obrot kamera(pierwszo osobowa)
         float mouseX = Input.GetAxis("Mouse X") * mouseSensitvity * Time.deltaTime;
 
         float mouseY = Input.GetAxis("Mouse Y") * mouseSensitvity * Time.deltaTime; 
@@ -71,9 +88,11 @@ public class Playermovment : MonoBehaviour
         xRotation = Mathf.Clamp(xRotation, -70f, 90f);
         camerka.transform.localRotation = Quaternion.Euler(xRotation, yRotation, 0f);
 
-
+        //obrot postaci w zaleznosci od kierunku w ktorym idzie
+ 
         //wziecie camery z cameradirectordirector
         camerka.gameObject.transform.localPosition = Vector3.zero;
+
 
         //ruch
         
@@ -93,7 +112,8 @@ public class Playermovment : MonoBehaviour
     }
     private void Ruch()
     {
-        ruch.moveDirection = camerka.transform.forward * ruch.verticalInput+camerka.transform.right*ruch.horizontalInput;
+        if (!watchingIn3Person) ruch.moveDirection = camerka.transform.forward * ruch.verticalInput + camerka.transform.right * ruch.horizontalInput;
+        else { ruch.moveDirection = camerka3Person.transform.forward * ruch.verticalInput + camerka3Person.transform.right * ruch.horizontalInput; }
         if (grounded)//on ground
         {
             rb.AddForce(ruch.moveDirection.normalized * speed * 10f, ForceMode.Force);
