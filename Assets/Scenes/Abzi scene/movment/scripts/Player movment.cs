@@ -28,57 +28,54 @@ public class Playermovment : MonoBehaviour
     public float airMultiplier;
     bool readyToJump;
     bool watchingIn3Person;
-    // Start is called before the first frame update
+    private void Awake()
+    {
+        //mainSetup dont work here (idk why)
+    }
     void Start()
     {
-        FindObjectOfType<CinemachineFreeLook>().Follow = transform;
-        FindObjectOfType<CinemachineFreeLook>().LookAt = transform;
-        camerka3Person = FindObjectOfType<CinemachineBrain>().GetComponent<Camera>();
-              FindObjectOfType<Camera>().gameObject.transform.parent.parent = transform;
-        FindObjectOfType<Camera>().gameObject.transform.parent.localPosition = Vector3.zero;
-        camerka = FindObjectOfType<Camera>();
-        speed = ruch.speed;
+        mainSetup();
 
-        //dodanie rigibody i box colider
-     //   BoxCollider bc = gameObject.AddComponent(typeof(BoxCollider)) as BoxCollider;
-       CapsuleCollider Cp= gameObject.AddComponent(typeof(CapsuleCollider)) as CapsuleCollider;
-        
-        rb = gameObject.AddComponent(typeof(Rigidbody)) as Rigidbody;
-        transform.position = new Vector3(0, 200f, 0);
-        rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
-        rb.interpolation = RigidbodyInterpolation.Interpolate;
-        rb.freezeRotation = true;
-        rb.mass = 2;
-        rb.drag = 5f;
-        groundDrag = rb.drag;
-        readyToJump = true;
-        playerHeight = 1;
-
-        jumpForce = 24;
-        jumpCooldown = 0.25f;
-        airMultiplier = 0.01f;
-        //ustawic mapie wlasna maske!!!!
-        whatIsGround = LayerMask.GetMask("Default");
-       // Cursor.lockState = CursorLockMode.Locked;
     }
 
-    // Update is called once per frame
     void Update()
     {
         ruch.speed = speed;
         ruch.speedObrotu = speed;
+        changeWatching();
+
+        rotateCameraFirstPerson();//even when 3person camera is on 
+
+        //ruch
+
+        inputMovment();
+    }
+    private void FixedUpdate()
+    {
+        speedControl();
+        Ruch();
+    }
+
+
+
+
+    private void changeWatching()
+    {
         //zmiana widoku
-        if(watchingIn3Person)
+        if (watchingIn3Person)
         { camerka3Person.gameObject.SetActive(true); camerka.gameObject.SetActive(false); }
         else
         {
             camerka3Person.gameObject.SetActive(false);
             camerka.gameObject.SetActive(true);
         }
-        if(Input.GetKeyDown(KeyCode.F1))
+        if (Input.GetKeyDown(KeyCode.F1))
         {
             watchingIn3Person = !watchingIn3Person;
         }
+    }
+    private void rotateCameraFirstPerson()
+    {
         // obrot kamera(pierwszo osobowa)
         float mouseX = Input.GetAxis("Mouse X") * mouseSensitvity * Time.deltaTime;
 
@@ -92,10 +89,9 @@ public class Playermovment : MonoBehaviour
  
         //wziecie camery z cameradirectordirector
         camerka.gameObject.transform.localPosition = Vector3.zero;
-
-
-        //ruch
-        
+    }
+    private void inputMovment()
+    {
         ruch.MyInput();
        if(Input.GetKey(KeyCode.Space)&& readyToJump && grounded)
         {
@@ -110,6 +106,8 @@ public class Playermovment : MonoBehaviour
         else
             rb.drag = 0;
     }
+    
+
     private void Ruch()
     {
         if (!watchingIn3Person) ruch.moveDirection = camerka.transform.forward * ruch.verticalInput + camerka.transform.right * ruch.horizontalInput;
@@ -125,11 +123,7 @@ public class Playermovment : MonoBehaviour
 
 
     }
-    private void FixedUpdate()
-    {
-        speedControl();
-        Ruch();
-    }
+
     private void speedControl()//mozna usunac jezeli chcemy by sie rozpedzal
     {
         Vector3 flatVel = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
@@ -147,5 +141,51 @@ public class Playermovment : MonoBehaviour
     private void ResetJump()
     {
         readyToJump = true;
+    } 
+    void cameraSetup()
+    {
+        FindObjectOfType<CinemachineFreeLook>().Follow = transform;
+        FindObjectOfType<CinemachineFreeLook>().LookAt = transform;
+        camerka3Person = FindObjectOfType<CinemachineBrain>().GetComponent<Camera>();
+              FindObjectOfType<Camera>().gameObject.transform.parent.parent = transform;
+        FindObjectOfType<Camera>().gameObject.transform.parent.localPosition = Vector3.zero;
+        camerka = FindObjectOfType<Camera>();
+    }
+    void rbSetup()
+    {        
+        CapsuleCollider Cp= gameObject.AddComponent(typeof(CapsuleCollider)) as CapsuleCollider;
+        rb = gameObject.AddComponent(typeof(Rigidbody)) as Rigidbody;
+        rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
+        rb.interpolation = RigidbodyInterpolation.Interpolate;
+        rb.freezeRotation = true;
+        rb.mass = 2;
+        rb.drag = 5f;
+        
+    }
+    void jumpSetup()
+    {
+        groundDrag = rb.drag;
+        readyToJump = true;
+        playerHeight = 1;
+
+        jumpForce = 24;
+        jumpCooldown = 0.25f;
+        airMultiplier = 0.01f;
+        //ustawic mapie wlasna maske!!!!
+        whatIsGround = LayerMask.GetMask("Default");
+       // Cursor.lockState = CursorLockMode.Locked;
+    }
+    void mainSetup()
+    {
+        cameraSetup();
+        speed = ruch.speed;
+
+        //dodanie rigibody i box colider
+        //   BoxCollider bc = gameObject.AddComponent(typeof(BoxCollider)) as BoxCollider;
+
+        rbSetup();
+
+        transform.position = new Vector3(0, 200f, 0);
+        jumpSetup();
     }
 }

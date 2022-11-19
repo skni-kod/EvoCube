@@ -1,7 +1,7 @@
 using UnityEngine;
 using Zenject;
 
-public class Menager : MonoInstaller
+public class MovmentInstaller : MonoInstaller
 {
     [SerializeField]
     public GameObject wygladGraczaPrefab;

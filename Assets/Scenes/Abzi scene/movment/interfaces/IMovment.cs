@@ -11,6 +11,6 @@ public interface IMovment
     float horizontalInput { get; set; }
 
     float verticalInput { get; set; }
-    public void Ruch();
+
     public void MyInput();
 }

@@ -19,39 +19,10 @@ public class Movment :  IMovment
 		speed = 14;
 		speedObrotu = 50;
 		rotation = Vector2.zero;
-	//	rb = playermovment.GetComponent<Rigidbody>();
+
 		
     }
-    public void Ruch()
-    {
-		/*
-		if (Input.GetKey(KeyCode.W))
-		{
-			transform.position += transform.forward * 0.6f * speed * Time.deltaTime;
-		}
-		if (Input.GetKey(KeyCode.S))
-		{
-			transform.position -= transform.forward * 0.6f * speed * Time.deltaTime;
-		}
-		if (Input.GetKey(KeyCode.Space))
-		{
-			transform.position += transform.up * 0.4f * speed * Time.deltaTime;
-		}
-		if (Input.GetKey(KeyCode.LeftControl))
-		{
-			transform.position -= transform.up * 0.4f * speed * Time.deltaTime;
-		}
-		if (Input.GetKey(KeyCode.A))
-		{
-			transform.position -= transform.right * 0.8f * speed * Time.deltaTime;
-		}
-		if (Input.GetKey(KeyCode.D))
-		{
-			transform.position += transform.right * 0.8f * speed * Time.deltaTime;
-		} */
-	
 
-	}
  
 	public void MyInput()
     {
