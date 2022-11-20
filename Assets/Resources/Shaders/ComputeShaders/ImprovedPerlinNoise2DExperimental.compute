@@ -1,0 +1,224 @@
+#pragma kernel normalN
+#pragma kernel turbulentN
+#pragma kernel ridgeN
+#pragma kernel perlinInjectedN
+#pragma kernel perlinInjected2N
+#pragma kernel witekN
+
+
+SamplerState _PointRepeat;
+
+Texture2D _PermTable1D, _Gradient2D;
+
+float _Idk;
+int _Octaves;
+float _Frequency, _Lacunarity, _Gain;
+
+int _Width;
+
+RWStructuredBuffer<float3> _Result;
+
+float2 _Position;
+
+
+
+float2 fade(float2 t)
+{
+	return t * t * t * (t * (t * 6 - 15) + 10);
+}
+
+float perm(float x)
+{
+	return _PermTable1D.SampleLevel(_PointRepeat, float2(x,0), 0).a;
+}
+
+float grad(float x, float2 p)
+{
+	float2 g = _Gradient2D.SampleLevel(_PointRepeat, float2(x*8.0, 0), 0).rg * 2.0 - 1.0;
+	return dot(g, p);
+}
+
+float inoise(float2 p)
+{
+	//p = p + float2(_X, _Y);
+	float2 P = fmod(floor(p), 256.0);	// FIND UNIT SQUARE THAT CONTAINS POINT
+  	p -= floor(p);                      // FIND RELATIVE X,Y OF POINT IN SQUARE.
+	float2 f = fade(p);                 // COMPUTE FADE CURVES FOR EACH OF X,Y.
+
+	P = P / 256.0;
+	const float one = 1.0 / 256.0;
+	
+    // HASH COORDINATES OF THE 4 SQUARE CORNERS
+  	float A = perm(P.x) + P.y;
+  	float B = perm(P.x + one) + P.y;
+ 
+	// AND ADD BLENDED RESULTS FROM 4 CORNERS OF SQUARE
+  	return lerp( lerp( grad(perm(A    ), p ),  
+                       grad(perm(B    ), p + float2(-1, 0) ), f.x),
+                 lerp( grad(perm(A+one), p + float2(0, -1) ),
+                       grad(perm(B+one), p + float2(-1, -1)), f.x), f.y);
+                           
+}
+
+// fractal sum, range -1.0 - 1.0
+float fBm(float2 p, int octaves, float injection)
+{
+	float freq = _Frequency, amp = 0.5;
+	float sum = 0;	
+	for(int i = 0; i < octaves; i++) 
+	{
+		sum += inoise(p * freq) * amp;
+		freq *= _Lacunarity;
+		amp *= _Gain * injection;
+	}
+	return sum;
+}
+
+// fractal abs sum, range 0.0 - 1.0
+float turbulent(float2 p, int octaves, float injection)
+{
+	float sum = 0;
+	float freq = _Frequency, amp = 1.0;
+	for(int i = 0; i < octaves; i++) 
+	{
+		sum += abs(inoise(p*freq))*amp*injection;
+		freq *= _Lacunarity;
+		amp *= _Gain;
+	}
+	return sum;
+}
+
+// Ridged multifractal, range 0.0 - 1.0
+// See "Texturing & Modeling, A Procedural Approach", Chapter 12
+float ridge(float h, float offset)
+{
+    h = abs(h);
+    h = offset - h;
+    h = h * h;
+    return h;
+}
+
+float ridgedmf(float2 p, int octaves, float offset, float injection)
+{
+	float sum = 0;
+	float freq = _Frequency, amp = 0.5;
+	float prev = 1.0;
+	for(int i = 0; i < octaves; i++) 
+	{
+		float n = ridge(inoise(p*freq), offset);
+		sum += n*amp*prev;
+		prev = n;
+		freq *= _Lacunarity * injection;
+		amp *= _Gain * injection;
+	}
+	return sum;
+}
+
+[numthreads(8,8,1)]
+void ridgeN(uint3 id : SV_DispatchThreadID)
+{
+	float2 uv = float2(id.xy + _Position);
+	float n = ridgedmf(uv, _Octaves, _Idk, 1);
+	float3 N = float3(id.x, n, id.y);
+	_Result[((id.x + id.y * _Width) * 6) + 0] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 1] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 2] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 3] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 4] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 5] = N;
+}
+
+[numthreads(8, 8, 1)]
+void normalN(uint3 id : SV_DispatchThreadID)
+{
+    float2 uv = float2(id.xy + _Position);
+	float n = fBm(uv, _Octaves, 1);
+	float3 N = float3(id.x, n, id.y);
+	_Result[((id.x + id.y * _Width) * 6) + 0] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 1] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 2] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 3] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 4] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 5] = N;
+}
+
+[numthreads(8, 8, 1)]
+void turbulentN(uint3 id : SV_DispatchThreadID)
+{
+    float2 uv = float2(id.xy + _Position);
+	float n = turbulent(uv, _Octaves, 1);
+	float3 N = float3(id.x, n, id.y);
+	_Result[((id.x + id.y * _Width) * 6) + 0] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 1] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 2] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 3] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 4] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 5] = N;
+}
+
+[numthreads(8, 8, 1)]
+void perlinInjectedN(uint3 id : SV_DispatchThreadID)
+{
+    float2 uv = float2(id.xy + _Position);
+	float n0 = fBm(uv, _Octaves, 2);
+	float n = ridgedmf(uv, _Octaves, _Idk, n0)*0.5;
+	n += turbulent(uv, _Octaves, n0)*0.5;
+	float n2 = fBm(uv, _Octaves, n);
+	float n3 = fBm(uv, 3, 1);
+	float3 N = float3(id.x, n2 + n3*2, id.y);
+	_Result[((id.x + id.y * _Width) * 6) + 0] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 1] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 2] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 3] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 4] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 5] = N;
+}
+
+
+[numthreads(8, 8, 1)]
+void perlinInjected2N(uint3 id : SV_DispatchThreadID)
+{
+    float2 uv = float2(id.xy + _Position);
+	float n = clamp(fBm(uv, _Octaves, 1), 0, 6);
+	n += clamp(fBm(uv, _Octaves + 1, 1), 0, 16);
+	float ref = clamp(fBm(uv, _Octaves, 3), 0, 4);
+	n += clamp(ridgedmf(uv, 2, _Idk, ref), -1000, 1000);
+	float3 N = float3(id.x, n, id.y);
+	_Result[((id.x + id.y * _Width) * 6) + 0] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 1] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 2] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 3] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 4] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 5] = N;
+}
+
+
+[numthreads(8, 8, 1)]
+void witekN(uint3 id : SV_DispatchThreadID)
+{
+    float2 uv = float2(id.xy + _Position);
+	float n = abs(fBm(uv, _Octaves, 2) * 5.0);
+	n += fBm(uv, _Octaves, 1);
+	//n = floor(n % 20) * 1.5;
+	n += ridgedmf(uv, _Octaves, 3, 1) * 0.008 * ridgedmf(uv, _Octaves, 3, 1);
+	n = floor(n * 1.0)/2.0;
+
+
+
+
+
+
+
+
+	float3 N = float3(id.x, n, id.y);
+	_Result[((id.x + id.y * _Width) * 6) + 0] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 1] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 2] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 3] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 4] = N;
+	_Result[((id.x + id.y * _Width) * 6) + 5] = N;
+}
+
+
+
+

@@ -55,6 +55,13 @@ namespace ImprovedPerlinNoiseProject
             LoadGradient2D();
         }
 
+        public static GPUPerlinNoise Get2DNoise(int seed)
+        {
+            GPUPerlinNoise perlin = new GPUPerlinNoise(seed);
+            perlin.LoadResourcesFor2DNoise();
+            return perlin;
+        }
+
         public void LoadResourcesFor3DNoise()
         {
             LoadPermTable2D();

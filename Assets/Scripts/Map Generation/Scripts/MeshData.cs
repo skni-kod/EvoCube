@@ -2,11 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MeshData
+namespace EvoCube.MapGeneration
 {
-    float[] data;
-    public MeshData()
+    public class MeshData
     {
-
+        float[] data;
     }
 }
+
+
