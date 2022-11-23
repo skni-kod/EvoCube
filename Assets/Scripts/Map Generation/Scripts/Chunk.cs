@@ -28,6 +28,7 @@ namespace EvoCube.MapGeneration
             mesh.vertices = MeshAPI.ResizePerlinVerticesDown(request.GetData<Vector3>().ToArray());
             mesh.triangles = MeshAPI.CalculateTrianglesFlat(TerrainConfig.chunkSize);
             mesh.RecalculateNormals();
+            //mesh.indexFormat = IndexFormat.UInt32;
             SetMesh(mesh);
         }
 

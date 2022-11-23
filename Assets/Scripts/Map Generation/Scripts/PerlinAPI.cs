@@ -10,13 +10,13 @@ namespace EvoCube.MapGeneration
     {
         public GPUPerlinNoise perlin;
         public GPUPerlinNoise perlin3D;
-        public Perlin2dSettings p2d;
+        [Inject]public Perlin2dSettings p2d;
         public bool initialised = false;
 
 
         [Inject]public void Construct()
         {
-            p2d = ScriptableObject.CreateInstance<Perlin2dSettings>();
+            //p2d = ScriptableObject.CreateInstance<Perlin2dSettings>();
             initialised = true;
             ReloadPerlin();
             ReloadPerlin3D();

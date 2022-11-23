@@ -6,8 +6,11 @@ using EvoCube.MapGeneration;
 
 public class GameplayInstaller : MonoInstaller
 {
+    
     public static void Install(DiContainer container)
     {
+
+        container.Bind<Perlin2dSettings>().FromScriptableObjectResource("ScriptableObjects/PerlinSettigns/TestingNewMapGen").AsSingle();
         container.BindFactory<GameObject, Chunk, Chunk.Factory>().FromFactory<Chunk.ChunkFactory>();
 
         container.BindInterfacesAndSelfTo<EvoCube.MapGeneration.PerlinAPI>()
