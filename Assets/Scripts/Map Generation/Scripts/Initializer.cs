@@ -8,11 +8,13 @@ public class Initializer : MonoBehaviour
 {
     [Inject][SerializeField] IUiDirector uiDirector;
     [Inject][SerializeField] ICameraDirector cameraDirector;
+    [Inject][SerializeField] ILightDirector lightDirector;
 
     private void Start()
     {
         //SceneManager.LoadScene("UI", LoadSceneMode.Additive);
         uiDirector.Initialize();
         cameraDirector.Initialize();
+        lightDirector.Initialize();
     }
 }

@@ -23,6 +23,11 @@ public class CoreInstaller : MonoInstaller
         .WithGameObjectName("CameraDirector")
         .AsSingle().NonLazy();
 
+        Container.BindInterfacesAndSelfTo<LightDirector>()
+        .FromNewComponentOnNewGameObject()
+        .WithGameObjectName("LigthDirector")
+        .AsSingle().NonLazy();
+
 
         Container.Bind<Initializer>()
         .FromComponentInNewPrefab(initializerPrefab)

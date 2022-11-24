@@ -11,7 +11,8 @@ namespace EvoCube.MapGeneration
     {
         public ComputeShader m_perlinNoise;
         private ComputeBuffer m_noiseBuffer;
-        [Inject]PerlinAPI _perlinAPI;
+        [Inject] readonly TopologyWorker.Pool _topologyWorkerPool;
+        [Inject] readonly PerlinAPI _perlinAPI;
 
         [Inject] public void Construct()
         {
@@ -40,6 +41,7 @@ namespace EvoCube.MapGeneration
             m_perlinNoise.SetFloat("_Z", offset.z * TerrainConfig.chunkSize);
             m_perlinNoise.Dispatch(_perlinAPI.p2d.type, (TerrainConfig.chunkSize + TerrainConfig.kernelNumber) / TerrainConfig.kernelNumber, (TerrainConfig.chunkSize + TerrainConfig.kernelNumber) / TerrainConfig.kernelNumber, 1);
             AsyncGPUReadback.Request(m_noiseBuffer, callback);
+            _topologyWorkerPool.Despawn(this);
         }
 
         public class Pool : MonoMemoryPool<TopologyWorker>

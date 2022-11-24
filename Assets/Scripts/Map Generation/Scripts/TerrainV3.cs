@@ -19,24 +19,6 @@ namespace EvoCube.MapGeneration
         public void Initialize()
         {
             spawnChunk(new Vector3(0, 0, 0));
-            spawnChunk(new Vector3(1, 0, 0));
-            spawnChunk(new Vector3(0, 0, 1));
-            spawnChunk(new Vector3(1, 0, 1));
-
-            spawnChunk(new Vector3(2, 0, 0));
-            spawnChunk(new Vector3(3, 0, 0));
-            spawnChunk(new Vector3(2, 0, 1));
-            spawnChunk(new Vector3(3, 0, 1));
-
-            spawnChunk(new Vector3(0, 0, 2));
-            spawnChunk(new Vector3(1, 0, 2));
-            spawnChunk(new Vector3(0, 0, 3));
-            spawnChunk(new Vector3(1, 0, 3));
-
-            spawnChunk(new Vector3(2, 0, 2));
-            spawnChunk(new Vector3(3, 0, 2));
-            spawnChunk(new Vector3(2, 0, 3));
-            spawnChunk(new Vector3(3, 0, 3));
         }
 
         void spawnChunk(Vector3 id)
@@ -46,8 +28,8 @@ namespace EvoCube.MapGeneration
             transform.Adopt(chunkObject);
             chunkObject.transform.position = id * TerrainConfig.chunkSize;
             TopologyWorker worker = _topologyWorkerPool.Spawn();
-            //worker.Init();
             worker.Generate(id, chunk.BuildMeshCallback);
+            
         }
     }
 }

@@ -15,6 +15,7 @@ namespace EvoCube.MapGeneration
         public void BuildMesh(Vector3[] perlinData)
         {
             Mesh mesh = new Mesh();
+            mesh.indexFormat = IndexFormat.UInt32;
             mesh.vertices = MeshAPI.ResizePerlinVerticesDown(perlinData);
             mesh.triangles = MeshAPI.CalculateTrianglesFlat(TerrainConfig.chunkSize);
             mesh.RecalculateNormals();
@@ -25,10 +26,10 @@ namespace EvoCube.MapGeneration
         public void BuildMeshCallback(AsyncGPUReadbackRequest request)
         {
             Mesh mesh = new Mesh();
+            mesh.indexFormat = IndexFormat.UInt32;
             mesh.vertices = MeshAPI.ResizePerlinVerticesDown(request.GetData<Vector3>().ToArray());
             mesh.triangles = MeshAPI.CalculateTrianglesFlat(TerrainConfig.chunkSize);
             mesh.RecalculateNormals();
-            //mesh.indexFormat = IndexFormat.UInt32;
             SetMesh(mesh);
         }
 
