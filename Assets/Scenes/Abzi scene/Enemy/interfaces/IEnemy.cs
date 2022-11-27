@@ -5,7 +5,7 @@ using UnityEngine;
 public interface IEnemy 
 {
    
-    public void movment();
-    public void attack();
-    public void getDmg(float dmg);
+    public void Movment();
+    public void Attack();
+    public void GetDmg(float dmg);
 }

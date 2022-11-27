@@ -2,16 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
-public struct Stats
+namespace EvoCube.EnemySystem
 {
-    public float maxHp { get; set; }
-    public float hp { get; set; }
-    public float speed { get; set; }
-    public Stats(float _maxHp, float _hp, float _speed)
+    [System.Serializable]
+    public struct Stats
     {
-        maxHp = _maxHp;
-        hp = _hp;
-        speed = _speed;
+        public float maxHp { get; set; }
+        public float hp { get; set; }
+        public float speed { get; set; }
+        public Stats(float _maxHp, float _hp, float _speed)
+        {
+            maxHp = _maxHp;
+            hp = _hp;
+            speed = _speed;
+        }
     }
 }

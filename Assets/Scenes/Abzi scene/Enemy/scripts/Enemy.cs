@@ -2,19 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
-
+using EvoCube.EnemySystem;
 public class Enemy : MonoBehaviour,IEnemy
 {
     public Stats stats;
     public float detectionRadius;
     public GameObject target;
-    [Inject]
-    public virtual void Construct()
-    {
 
-    }
-
-    public virtual void movment()
+    public virtual void Movment()
     {
         if(target==null && checkIfPlayerAround()!=null)
         {
@@ -22,11 +17,11 @@ public class Enemy : MonoBehaviour,IEnemy
         }
 
     }
-    public virtual void attack()
+    public virtual void Attack()
     { 
     
     }
-    public virtual void getDmg(float dmg)
+    public virtual void GetDmg(float dmg)
     {
         stats.hp -= dmg;
         if(stats.hp<0)
@@ -36,12 +31,6 @@ public class Enemy : MonoBehaviour,IEnemy
 
 
 
-
-
-    public class Factory : PlaceholderFactory<Enemy>
-    {
-
-    }
 
 
 
