@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5b27d748ce8b2d429d2061ccafc2acd, type: 3}
   m_Name: TestingNewMapGen
   m_EditorClassIdentifier: 
-  frequency: -0.1
-  lacunarity: -0.91
-  gain: 4.43
-  seed: 0
+  frequency: -0.02
+  lacunarity: -0.65
+  gain: 5.76
+  seed: 362
   octaves: 3
-  resolution: 0.58
-  idk: 11.17
-  type: 0
+  resolution: 1.38
+  idk: 8.94
+  type: 1

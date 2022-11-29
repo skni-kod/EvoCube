@@ -7,7 +7,7 @@ using UnityEngine;
 public class TerrainConfig : ScriptableObject
 {
     [SerializeField] public static int seed = 0;
-    [SerializeField] public static int chunkSize = 512;
+    [SerializeField] public static int chunkSize = 256;
     [SerializeField] public static int kernelNumber = 8;
     //public static Perlin2dSettings p2d_to_set = ScriptableObject.CreateInstance<Perlin2dSettings>();
 }

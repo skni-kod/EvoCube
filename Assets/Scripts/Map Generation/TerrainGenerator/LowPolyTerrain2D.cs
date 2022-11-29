@@ -21,7 +21,7 @@ public class LowPolyTerrain2D : MonoBehaviour
     public int perlinGeneratorsAmount = 5;
 
     private int _last_frame_seed = 0;
-
+    /*
 
     #region Unity Methods
 
@@ -143,6 +143,6 @@ public class LowPolyTerrain2D : MonoBehaviour
     }
 
     #endregion
-
+    */
 }
 

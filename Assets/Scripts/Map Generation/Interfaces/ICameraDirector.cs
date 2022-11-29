@@ -2,6 +2,9 @@
 
 public interface ICameraDirector
 {
-    Camera camera { get; }
+    DirectorsCamera currentCamera { get; }
     void Initialize();
+
+    void RegisterCamera(DirectorsCamera directorsCamera);
+    void SwitchMainCamera(string cameraName);
 }

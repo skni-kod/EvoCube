@@ -12,6 +12,21 @@ namespace EvoCube.MapGeneration
         private MeshRenderer _meshRenderer;
         public Vector3 Id { get; set; }
 
+        #region GIZMOS
+        void OnDrawGizmos()
+        {
+            Gizmos.color = Color.blue;
+            Gizmos.DrawWireCube(new Vector3((Id.x + 0.5f) * TerrainConfig.chunkSize, (Id.y + 0.5f) * TerrainConfig.chunkSize, (Id.z + 0.5f) * TerrainConfig.chunkSize), 
+                new Vector3(TerrainConfig.chunkSize, TerrainConfig.chunkSize, TerrainConfig.chunkSize));
+        }
+        void OnDrawGizmosSelected()
+        {
+            Gizmos.color = Color.green;
+            Gizmos.DrawWireCube(new Vector3((Id.x + 0.5f) * TerrainConfig.chunkSize, (Id.y + 0.5f) * TerrainConfig.chunkSize, (Id.z + 0.5f) * TerrainConfig.chunkSize),
+                new Vector3(TerrainConfig.chunkSize, TerrainConfig.chunkSize, TerrainConfig.chunkSize));
+        }
+        #endregion
+
         public void BuildMesh(Vector3[] perlinData)
         {
             Mesh mesh = new Mesh();
@@ -20,6 +35,14 @@ namespace EvoCube.MapGeneration
             mesh.triangles = MeshAPI.CalculateTrianglesFlat(TerrainConfig.chunkSize);
             mesh.RecalculateNormals();
             SetMesh(mesh);
+        }
+
+        public void RegenerateMeshCallback(AsyncGPUReadbackRequest request)
+        {
+            Guard.AgainstNull(GetMesh(), "Mesh of a chunk is null");
+            GetMesh().vertices = MeshAPI.ResizePerlinVerticesDown(request.GetData<Vector3>().ToArray());
+            GetMesh().triangles = MeshAPI.CalculateTrianglesFlat(TerrainConfig.chunkSize);
+            GetMesh().RecalculateNormals();
         }
 
 

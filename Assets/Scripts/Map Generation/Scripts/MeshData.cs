@@ -6,7 +6,8 @@ namespace EvoCube.MapGeneration
 {
     public class MeshData
     {
-        float[] data;
+        Vector3[] vectors = null;
+        int[] triangles = null;
     }
 }
 

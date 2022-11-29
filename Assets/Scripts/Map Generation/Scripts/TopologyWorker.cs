@@ -18,11 +18,16 @@ namespace EvoCube.MapGeneration
         {
             m_perlinNoise = Instantiate(Resources.Load<ComputeShader>("Shaders/ComputeShaders/ImprovedPerlinNoise2D"));
             m_noiseBuffer = new ComputeBuffer((TerrainConfig.chunkSize + TerrainConfig.kernelNumber) * (TerrainConfig.chunkSize + TerrainConfig.kernelNumber) * 6, sizeof(float) * 3);
+            ReloadInitialPerlinStuff();
+            ReloadSettings();
+        }
+
+        void ReloadInitialPerlinStuff()
+        {
             m_perlinNoise.SetInt("_Width", TerrainConfig.chunkSize + TerrainConfig.kernelNumber);
             m_perlinNoise.SetTexture(_perlinAPI.p2d.type, "_PermTable1D", _perlinAPI.perlin.PermutationTable1D);
             m_perlinNoise.SetTexture(_perlinAPI.p2d.type, "_Gradient2D", _perlinAPI.perlin.Gradient2D);
             m_perlinNoise.SetBuffer(_perlinAPI.p2d.type, "_Result", m_noiseBuffer);
-            ReloadSettings();
         }
 
         void ReloadSettings()
@@ -32,6 +37,12 @@ namespace EvoCube.MapGeneration
             m_perlinNoise.SetFloat("_Gain", _perlinAPI.p2d.gain);
             m_perlinNoise.SetFloat("_Frequency", _perlinAPI.p2d.frequency);
             m_perlinNoise.SetFloat("_Lacunarity", _perlinAPI.p2d.lacunarity);
+        }
+
+        public void HardReload()
+        {
+            ReloadInitialPerlinStuff();
+            ReloadSettings();
         }
 
         public void Generate(Vector3 offset, Action<AsyncGPUReadbackRequest> callback)

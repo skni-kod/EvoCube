@@ -12,6 +12,7 @@ public class CoreInstaller : MonoInstaller
     {
         Guard.AgainstNull(initializerPrefab, $"CoreInstaller: initializerPrefab");
 
+        Container.Bind<DirectorsCamera>().FromNewComponentOnNewGameObject().AsTransient();
 
         Container.BindInterfacesAndSelfTo<UiDirector>()
         .FromNewComponentOnNewGameObject()

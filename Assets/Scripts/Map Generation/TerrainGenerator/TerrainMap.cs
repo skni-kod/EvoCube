@@ -245,7 +245,7 @@ public class MapChunkFinder
     }
     private void _findAllChunksInRadius()
     {
-        newChunkIds = FindChunkIdsAroundAPI.FindChunksIdsAroundSquare(PlayerAPI.GetPlayerPosition(), TerrainMap.instance.mapGenSettings.squareGenRadius, TerrainMap.instance.mapGenSettings.chunkSize);
+        //newChunkIds = FindChunkIdsAroundAPI.FindChunksIdsAroundSquare(PlayerAPI.GetPlayerPosition(), TerrainMap.instance.mapGenSettings.squareGenRadius, TerrainMap.instance.mapGenSettings.chunkSize);
     }
     private void _filterChunksOut()
     {
