@@ -37,7 +37,7 @@ public class PowerUpBite : MonoBehaviour
             Debug.Log(c.name);*/
             if (c.tag == "Enemy")
             {
-                c.gameObject.GetComponent<Enemy>().TakeDamage(100);
+              //  c.gameObject.GetComponent<Enemy2>().TakeDamage(100);
             }
         }
     }
