@@ -9,5 +9,12 @@ public static class Guard
             throw new ArgumentNullException(argumentName);
         }
     }
+    public static void AgainstFalse(bool argument, string argumentName)
+    {
+        if (argument == false)
+        {
+            throw new ArgumentNullException(argumentName);
+        }
+    }
 
 }
