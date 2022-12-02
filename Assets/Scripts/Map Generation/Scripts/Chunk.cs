@@ -17,13 +17,13 @@ namespace EvoCube.MapGeneration
         {
             Gizmos.color = Color.blue;
             Gizmos.DrawWireCube(new Vector3((Id.x + 0.5f) * TerrainConfig.chunkSize, (Id.y + 0.5f) * TerrainConfig.chunkSize, (Id.z + 0.5f) * TerrainConfig.chunkSize), 
-                new Vector3(TerrainConfig.chunkSize, TerrainConfig.chunkSize, TerrainConfig.chunkSize));
+                new Vector3(TerrainConfig.chunkSize - 0.1f, TerrainConfig.chunkSize - 0.1f, TerrainConfig.chunkSize - 0.1f));
         }
         void OnDrawGizmosSelected()
         {
             Gizmos.color = Color.green;
             Gizmos.DrawWireCube(new Vector3((Id.x + 0.5f) * TerrainConfig.chunkSize, (Id.y + 0.5f) * TerrainConfig.chunkSize, (Id.z + 0.5f) * TerrainConfig.chunkSize),
-                new Vector3(TerrainConfig.chunkSize, TerrainConfig.chunkSize, TerrainConfig.chunkSize));
+                new Vector3(TerrainConfig.chunkSize - 0.1f, TerrainConfig.chunkSize - 0.1f, TerrainConfig.chunkSize - 0.1f));
         }
         #endregion
 

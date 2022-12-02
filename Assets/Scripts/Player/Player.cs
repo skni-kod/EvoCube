@@ -1,3 +1,4 @@
+using EvoCube.MapGeneration;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,12 +10,14 @@ namespace EvoCube.Player
     {
         DirectorsCamera playerCamera;
 
-        [Inject] void Construct(DirectorsCamera directorsCamera)
+        [Inject] void Construct(DirectorsCamera directorsCamera, ITerrain terrain)
         {
             playerCamera = directorsCamera;
             playerCamera.transform.SetParent(transform, false);
             playerCamera.RegisterCamera("PlayerCamera");
             playerCamera.SetActive();
+
+            terrain.SetTargetForGeneration(transform);
         }
 
 

@@ -7,7 +7,7 @@ using EvoCube.Player;
 
 public class GameplayInstaller : MonoInstaller
 {
-    
+
     public static void Install(DiContainer Container)
     {
 
