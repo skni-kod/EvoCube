@@ -28,10 +28,7 @@ public class Playermovment : MonoBehaviour
     public float airMultiplier;
     bool readyToJump;
     bool watchingIn3Person;
-    private void Awake()
-    {
-        //mainSetup dont work here (idk why)
-    }
+
     void Start()
     {
         mainSetup();
