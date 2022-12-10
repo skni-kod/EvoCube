@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 using Cinemachine;
+using EvoCube.Player;
+using EvoCube.MapGeneration;
 public class Playermovment : MonoBehaviour
 {
     [Inject]
@@ -13,7 +15,7 @@ public class Playermovment : MonoBehaviour
     [SerializeField]
     private Camera camerka;
     private Camera camerka3Person;
-
+    DirectorsCamera playerCamera;
     private float xRotation=0f;
 
     private float yRotation = 0f;
@@ -29,8 +31,23 @@ public class Playermovment : MonoBehaviour
     bool readyToJump;
     bool watchingIn3Person;
 
+    [Inject]
+    void Construct(DirectorsCamera directorsCamera, ITerrain terrain)
+    {
+        playerCamera = directorsCamera;
+        playerCamera.transform.SetParent(transform, false);
+        playerCamera.RegisterCamera("PlayerCamera");
+        playerCamera.SetActive();
+
+        terrain.SetTargetForGeneration(transform);
+    }
+
     void Start()
     {
+
+
+
+
         mainSetup();
 
     }
@@ -144,9 +161,10 @@ public class Playermovment : MonoBehaviour
         FindObjectOfType<CinemachineFreeLook>().Follow = transform;
         FindObjectOfType<CinemachineFreeLook>().LookAt = transform;
         camerka3Person = FindObjectOfType<CinemachineBrain>().GetComponent<Camera>();
+        
               FindObjectOfType<Camera>().gameObject.transform.parent.parent = transform;
         FindObjectOfType<Camera>().gameObject.transform.parent.localPosition = Vector3.zero;
-        camerka = FindObjectOfType<Camera>();
+        camerka = playerCamera.camera;
     }
     void rbSetup()
     {        
@@ -174,15 +192,42 @@ public class Playermovment : MonoBehaviour
     }
     void mainSetup()
     {
+
+        camerasInit();
         cameraSetup();
         speed = ruch.speed;
 
         //dodanie rigibody i box colider
-        //   BoxCollider bc = gameObject.AddComponent(typeof(BoxCollider)) as BoxCollider;
+
 
         rbSetup();
 
         transform.position = new Vector3(0, 200f, 0);
         jumpSetup();
+        meshSetup();
+    }
+    void meshSetup()
+    {
+        gameObject.AddComponent<MeshFilter>();
+        gameObject.GetComponent<MeshFilter>().sharedMesh = Resources.GetBuiltinResource<Mesh>("Cube.fbx");
+        gameObject.AddComponent<MeshRenderer>();
+       
+    }
+    void camerasInit()
+    {
+        //poprawic by bylo czytelnie
+        GameObject gCamerka3Person = new GameObject("for camera 3 person free look");
+        gCamerka3Person.AddComponent<CinemachineFreeLook>();
+        gCamerka3Person.GetComponent<CinemachineFreeLook>().m_Orbits[0].m_Radius = 12;
+        gCamerka3Person.GetComponent<CinemachineFreeLook>().m_Orbits[1].m_Radius = 18;
+        gCamerka3Person.GetComponent<CinemachineFreeLook>().m_Orbits[2].m_Radius = 10;
+        gCamerka3Person.GetComponent<CinemachineFreeLook>().m_Orbits[0].m_Height = 14;
+        gCamerka3Person.GetComponent<CinemachineFreeLook>().m_Orbits[1].m_Height = 4;
+        gCamerka3Person.GetComponent<CinemachineFreeLook>().m_Orbits[2].m_Height = 2;
+        gCamerka3Person.transform.parent = transform;
+        GameObject gCamera = new GameObject("Camera 3 person ");
+        gCamera.AddComponent<CinemachineBrain>();
+        gCamera.AddComponent<Camera>();
+        gCamera.transform.parent = transform;
     }
 }
