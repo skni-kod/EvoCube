@@ -9,7 +9,8 @@ public class Playermovment : MonoBehaviour
 {
     [Inject]
     public IMovment ruch;
-    
+    [Inject]
+    public IWeapon weapon;
     public int speed;
     public float mouseSensitvity = 150f;
     [SerializeField]
@@ -61,7 +62,7 @@ public class Playermovment : MonoBehaviour
         rotateCameraFirstPerson();//even when 3person camera is on 
 
         //ruch
-
+        gunLogic();
         inputMovment();
     }
     private void FixedUpdate()
@@ -158,6 +159,7 @@ public class Playermovment : MonoBehaviour
     } 
     void cameraSetup()
     {
+        Cursor.lockState = CursorLockMode.Locked;
         FindObjectOfType<CinemachineFreeLook>().Follow = transform;
         FindObjectOfType<CinemachineFreeLook>().LookAt = transform;
         camerka3Person = FindObjectOfType<CinemachineBrain>().GetComponent<Camera>();
@@ -229,5 +231,11 @@ public class Playermovment : MonoBehaviour
         gCamera.AddComponent<CinemachineBrain>();
         gCamera.AddComponent<Camera>();
         gCamera.transform.parent = transform;
+    }
+    void gunLogic()
+    {
+        if (watchingIn3Person) { return; }//naprawic bo nie ma dla 3 osoby strzelania
+        if (Input.GetMouseButton(0)) { weapon.Use(gameObject, camerka.transform.forward); }
+        weapon.updateCd();
     }
 }

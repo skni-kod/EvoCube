@@ -213,5 +213,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spider: {fileID: 1297985844405617125, guid: a8880dd1bca6c854d9c6544eb16908ea, type: 3}
-  wygladGraczaPrefab: {fileID: 6460580133603224596, guid: c0635fb6ee2d3e146a6e7404fa3e6866,
-    type: 3}
+  bullet: {fileID: 898789565033561496, guid: 887eadb771e3af84298e395d6444f2d2, type: 3}
