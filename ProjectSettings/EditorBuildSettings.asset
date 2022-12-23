@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/Main/InitScene.unity
+    guid: d1aea38324a1801458640cbd9ad07880
+  - enabled: 1
     path: Assets/Scenes/Zefir's MapGen/Main/Scenes/Core.unity
     guid: 963c5e249d1eed14d8bb2318fea1c297
   - enabled: 1
@@ -14,4 +17,13 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Zefir's MapGen/Main/Scenes/UI.unity
     guid: 71da54e70cfc0a04c9cc9b03417b7fa2
+  - enabled: 1
+    path: Assets/Scenes/Main/UI.unity
+    guid: ac2d2e4be143c1343965342020110944
+  - enabled: 1
+    path: Assets/Scenes/Main/MainMenu.unity
+    guid: 234c0e8703ee6c14591dff8d81689dbf
+  - enabled: 1
+    path: Assets/Scenes/Main/Core.unity
+    guid: 91c3f7edd2e03044b976be1608be6a18
   m_configObjects: {}

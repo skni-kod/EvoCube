@@ -1,4 +1,5 @@
-﻿public interface ILightDirector
+﻿
+public interface ILightDirector
 {
     void Initialize();
 }
