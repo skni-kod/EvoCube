@@ -10,6 +10,7 @@ namespace EvoCube.MapGeneration
     {
         private MeshFilter _meshFilter;
         private MeshRenderer _meshRenderer;
+        private MeshCollider _meshCollider;
         public Vector3 Id { get; set; }
 
         #region GIZMOS
@@ -68,6 +69,7 @@ namespace EvoCube.MapGeneration
                 RemoveMesh();
                 mesh.name = "ChunkMesh";
                 _meshFilter.sharedMesh = mesh;
+                _meshCollider.sharedMesh = mesh;
             }
         }
 
@@ -75,6 +77,7 @@ namespace EvoCube.MapGeneration
         {
             Mesh meshObj = _meshFilter.sharedMesh;
             _meshFilter.sharedMesh = null;
+            _meshCollider.sharedMesh = null;
             Destroy(meshObj);
         }
 
@@ -93,8 +96,10 @@ namespace EvoCube.MapGeneration
                 Chunk chunk = _container.InstantiateComponent<Chunk>(gameObject);
                 chunk._meshFilter = (MeshFilter)gameObject.AddComponent(typeof(MeshFilter));
                 chunk._meshRenderer = (MeshRenderer)gameObject.AddComponent(typeof(MeshRenderer));
+                chunk._meshCollider = (MeshCollider)gameObject.AddComponent(typeof(MeshCollider));
+             
                 chunk._meshRenderer.material = MaterialsAPI.GetMaterialByName("sand");
-
+               
                 return chunk;
             }
         }

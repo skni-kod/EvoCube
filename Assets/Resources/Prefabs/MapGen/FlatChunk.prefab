@@ -45,11 +45,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d0583b341f870149ae34d2a70002178, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  meshFilter: {fileID: 4432309760617669546}
+  terrainReference: {fileID: 0}
   size: 64
   offsetX: 0
   offsetY: 0
-  p2d: {fileID: 11400000, guid: 4a88f16ac6b2ef1468f2285c53e0bb16, type: 2}
 --- !u!33 &4432309760617669546
 MeshFilter:
   m_ObjectHideFlags: 0

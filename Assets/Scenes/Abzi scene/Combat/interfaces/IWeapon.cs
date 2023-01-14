@@ -2,9 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IWeapon
+public interface IWeapon 
 {
-    public  void Shoot(Transform tranShoter,
-    float range);
-
+    public void Use(GameObject caster,Vector3 dir);
+    public void updateCd();
 }
