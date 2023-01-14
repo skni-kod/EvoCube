@@ -4,13 +4,13 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Zenject;
 
-public class CoreInstaller : MonoInstaller
+public class ContextInstaller : MonoInstaller
 {
-    [SerializeField] GameObject initializerPrefab;
+    //[SerializeField] GameObject initializerPrefab;
 
     public override void InstallBindings()
     {
-        Guard.AgainstNull(initializerPrefab, $"CoreInstaller: initializerPrefab");
+        //Guard.AgainstNull(initializerPrefab, $"CoreInstaller: initializerPrefab");
 
         Container.Bind<DirectorsCamera>().FromNewComponentOnNewGameObject().AsTransient();
 
@@ -30,10 +30,10 @@ public class CoreInstaller : MonoInstaller
         .AsSingle().NonLazy();
 
 
-        Container.Bind<Initializer>()
+        /*Container.Bind<Initializer>()
         .FromComponentInNewPrefab(initializerPrefab)
         .WithGameObjectName("Initializer")
-        .AsSingle().NonLazy();
+        .AsSingle().NonLazy();*/
 
 
 
