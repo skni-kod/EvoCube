@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using UnityEditor;
 
+#if UNITY_EDITOR
 public class MakeScriptableObject
 {
     [MenuItem("Assets/Create/Perlin2dSettings")]
@@ -34,3 +35,4 @@ public class MakeScriptableObject
 
 
 }
+#endif

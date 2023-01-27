@@ -10,6 +10,13 @@ public class ContextInstaller : MonoInstaller
 
     public override void InstallBindings()
     {
+
+
+        Container.BindInterfacesAndSelfTo<CoreDirector>()
+        .FromNewComponentOnNewGameObject()
+        .WithGameObjectName("CoreDirector")
+        .AsSingle().NonLazy();
+
         //Guard.AgainstNull(initializerPrefab, $"CoreInstaller: initializerPrefab");
 
         Container.Bind<DirectorsCamera>().FromNewComponentOnNewGameObject().AsTransient();
